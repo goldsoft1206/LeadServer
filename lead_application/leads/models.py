@@ -2,20 +2,16 @@ import datetime
 from django.utils import timezone
 from django.db import models
 
-class Poll(models.Model):
-    question = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
+class Lead(models.Model):
+    investor_name = models.CharField(max_length=200)
     
     def __unicode__(self):
-        return self.question
-        
-    def was_published_recently(self):
-        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+        return self.investor_name
 
-class Choice(models.Model):
-    poll = models.ForeignKey(Poll)
-    choice = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
+class Owner(models.Model):
+    lead = models.ForeignKey(Lead)
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
     
     def __unicode__(self):
-        return self.choice
+        return self.first_name + " " + self.last_name

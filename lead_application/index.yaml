@@ -27,7 +27,30 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: leads_choice
+  properties:
+  - name: __key__
+    direction: desc
+
+- kind: leads_lead
+  properties:
+  - name: __key__
+    direction: desc
+
 - kind: leads_poll
   properties:
+  - name: __key__
+    direction: desc
+
+- kind: leads_poll
+  properties:
+  - name: pub_date
+  - name: __key__
+    direction: desc
+
+- kind: leads_poll
+  properties:
+  - name: pub_date
+    direction: desc
   - name: __key__
     direction: desc

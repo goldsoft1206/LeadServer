@@ -3,5 +3,6 @@
 *.pyc
 local_settings.py
 
+.gaedata/datastore
 
 static/

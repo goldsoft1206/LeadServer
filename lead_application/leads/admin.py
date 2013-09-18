@@ -1,12 +1,12 @@
-from leads.models import Lead, Owner
+from leads.models import Lead, PointOfContact
 from django.contrib import admin
 
-class OwnerInline(admin.TabularInline):
-    model = Owner
+class PointOfContactInline(admin.TabularInline):
+    model = PointOfContact
     extra = 1
 
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ('investor_name',)
-    inlines = [OwnerInline]
+    list_display = ('owner_name',)
+    #inlines = [OwnerInline]
 
 admin.site.register(Lead, LeadAdmin)

@@ -40,6 +40,8 @@ class Lead(models.Model):
     property_year_built = models.IntegerField(default=0, blank=True, null=True)
     # Tax Info
     auction_pending = models.BooleanField()
+    balance_owed = models.FloatField(default=0, blank=True, null=True)
+    auction_date = models.DateField(blank=True, null=True)
     
     # Short Sale Lender
     short_sale_lender_name = models.CharField(max_length=200, blank=True, null=True)

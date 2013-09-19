@@ -26,6 +26,12 @@ handlers:
   static_dir: django/contrib/admin/media
   expiration: '0'
   
+# For Development
+#- url: /static/.*
+#  static_dir: static/
+#  expiration: '0'
+  
+# For Production
 - url: /static
   static_dir: static
   expiration: '0'

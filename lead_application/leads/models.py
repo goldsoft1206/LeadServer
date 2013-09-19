@@ -6,6 +6,7 @@ class Lead(models.Model):
     # Owner Information
     first_name = models.CharField(max_length=200, blank=True, null=True)
     last_name = models.CharField(max_length=200, blank=True, null=True)
+    telephone1 = models.CharField(max_length=200, blank=True, null=True)
     
     # Property Information
     folio_id = models.CharField(max_length=200, blank=True, null=True)

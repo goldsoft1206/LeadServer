@@ -37,6 +37,36 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: leads_lead
+  properties:
+  - name: property_street_address
+  - name: __key__
+    direction: desc
+
+- kind: leads_lead
+  properties:
+  - name: property_street_address
+    direction: desc
+  - name: __key__
+    direction: desc
+
+- kind: leads_lead
+  properties:
+  - name: telephone1
+  - name: property_street_address
+    direction: desc
+  - name: __key__
+    direction: desc
+
+- kind: leads_lead
+  properties:
+  - name: telephone1
+    direction: desc
+  - name: property_street_address
+    direction: desc
+  - name: __key__
+    direction: desc
+
 - kind: leads_poll
   properties:
   - name: __key__

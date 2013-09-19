@@ -6,9 +6,9 @@ class PointOfContactInline(admin.TabularInline):
     extra = 1
 
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ('property_street_address', 'owner_name')
+    list_display = ('property_street_address', 'owner_name', 'telephone1')
     fieldsets = [
-        (None,               {'fields': ['first_name', 'last_name']}),
+        (None,               {'fields': ['first_name', 'last_name', 'telephone1']}),
         ('Property information', {'fields': ['folio_id', 'property_street_address', 'property_city', 'property_state', 'property_zip_code'], 'classes': ['collapse']}),
     ]
     

@@ -1,3 +1,5 @@
+Client Communication  .25
+
 Core
 - Deploy - 3
-- Lead Data - 2.25
+- Lead Data - 4

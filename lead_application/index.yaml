@@ -32,6 +32,11 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: leads_investor
+  properties:
+  - name: __key__
+    direction: desc
+
 - kind: leads_lead
   properties:
   - name: __key__

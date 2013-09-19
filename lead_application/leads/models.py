@@ -2,8 +2,17 @@ import datetime
 from django.utils import timezone
 from django.db import models
 
+class Investor(models.Model):
+    name = models.CharField(max_length=200)
+    
+    def __unicode__(self):
+        return self.name
+
 class Lead(models.Model):
+    # Core
+    investor = models.ForeignKey(Investor, null=True)
     # status 
+    
     # Owner Information
     deceased = models.BooleanField()
     first_name = models.CharField(max_length=200, blank=True, null=True)

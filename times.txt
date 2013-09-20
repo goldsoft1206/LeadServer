@@ -2,3 +2,7 @@ Core
 - Client Communication - 1.25 + 1/3
 - Deploy - 3.75
 - Lead Data - 7.75
+
+Import
+- CLient Communication - 0
+- Logic = 1.5

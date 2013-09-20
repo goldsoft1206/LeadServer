@@ -7,6 +7,31 @@ from django.shortcuts import render_to_response
 from django import forms
 from django.conf.urls import patterns
 
+import csv
+
+csv_headers = [
+               "Folio No",
+               "Date of Auction",
+               "Owner",
+               "Owner Second",
+               "Street Address",
+               "City",
+               "State",
+               "Zip Code",
+               "Situs",
+               "Assessed Value",
+               "Use Code",
+               "Legal Description",
+               "Total Balance",
+               "Annual Bill Balance (2012)",
+               "Deed Sale",
+               'Primary Zone',
+               'Land Use',
+               'Previous Sale',
+               'Price',
+               'OR Book Page'
+               ]
+
 class UploadFileForm(forms.Form):
     file  = forms.FileField()
 
@@ -50,7 +75,6 @@ class LeadAdmin(admin.ModelAdmin):
         return my_urls + urls
         
     def import_leads_view(self, request):
-        
         if request.method == 'POST':
             form = UploadFileForm(request.POST, request.FILES)
             if form.is_valid():
@@ -65,11 +89,16 @@ class LeadAdmin(admin.ModelAdmin):
         
     def import_leads(self, file):
         """ Import Leads from the given file """
-        lines = file.readlines()
-        for line in lines[1:]:
-            fields = line.split(",")
-            lead = Lead(folio_id=fields[0].replace('"', ''))
+        reader = csv.DictReader(file, fieldnames=csv_headers, restval="")
+        reader.next()
+        for row in reader:
+            folio_id = self.getFieldData(row, "Folio No")
+            street_address = self.getFieldData(row, "Street Address")
+            lead = Lead(folio_id=folio_id, owner_street_address=street_address)
             lead.save()
+    
+    def getFieldData(self, row, field):
+        return row[field].replace('"', '').replace('=', '')
 
 admin.site.register(Construction)
 admin.site.register(DealType)

@@ -7,12 +7,18 @@ class Investor(models.Model):
     
     def __unicode__(self):
         return self.name
+        
+class Status(models.Model):
+    status = models.CharField(max_length=200)
+    
+    def __unicode__(self):
+        return self.status
 
 class Lead(models.Model):
     # Core
     investor = models.ForeignKey(Investor, null=True)
+    status = models.ForeignKey(Status, null=True)
     active = models.BooleanField()
-    # status 
     
     # Owner Information
     deceased = models.BooleanField()

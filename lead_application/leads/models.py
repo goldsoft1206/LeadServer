@@ -14,6 +14,12 @@ class ListSource(models.Model):
     def __unicode__(self):
         return self.source
         
+class MailingType(models.Model):
+    mailing_type = models.CharField(max_length=200)
+    
+    def __unicode__(self):
+        return self.mailing_type
+        
 class Status(models.Model):
     status = models.CharField(max_length=200)
     
@@ -22,9 +28,10 @@ class Status(models.Model):
 
 class Lead(models.Model):
     # Core
-    investor = models.ForeignKey(Investor, null=True)
-    status = models.ForeignKey(Status, null=True)
-    list_source = models.ForeignKey(ListSource, null=True)
+    investor = models.ForeignKey(Investor, blank=True, null=True)
+    status = models.ForeignKey(Status, blank=True, null=True)
+    list_source = models.ForeignKey(ListSource, blank=True, null=True)
+    mailing_type = models.ForeignKey(MailingType, blank=True, null=True)
     active = models.BooleanField()
     
     # Owner Information

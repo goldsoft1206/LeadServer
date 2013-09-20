@@ -41,7 +41,7 @@ class Lead(models.Model):
     property_year_built = models.IntegerField(default=0, blank=True, null=True)
     # Tax Info
     auction_pending = models.BooleanField()
-    balance_owed = models.FloatField(default=0, blank=True, null=True)
+    balance_owed = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
     auction_date = models.DateField(blank=True, null=True)
     
     # Short Sale Lender
@@ -51,6 +51,12 @@ class Lead(models.Model):
     point_of_contact = models.CharField(max_length=200, blank=True, null=True)
     lender_verify_info = models.CharField(max_length=200, blank=True, null=True)
     loan_number = models.CharField(max_length=200, blank=True, null=True)
+    
+    # Mail/Campaign Info
+    cost = models.DecimalField(max_digits=19, decimal_places=2, blank=True, null=True)
+    letters_mailed = models.IntegerField(default=0, blank=True, null=True)
+    can_mail_multiple_times = models.BooleanField()
+    return_mail = models.BooleanField()
     
     def active_string(self):
         if self.active:

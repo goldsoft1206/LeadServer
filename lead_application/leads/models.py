@@ -2,6 +2,12 @@ import datetime
 from django.utils import timezone
 from django.db import models
 
+class Construction(models.Model):
+    construction_type = models.CharField(max_length=200)
+    
+    def __unicode__(self):
+        return self.construction_type
+
 class DealType(models.Model):
     deal_type = models.CharField(max_length=200)
     
@@ -67,11 +73,13 @@ class Lead(models.Model):
     property_state = models.CharField(max_length=200, blank=True, null=True)
     property_zip_code = models.CharField(max_length=200, blank=True, null=True)
     property_status = models.ForeignKey(PropertyStatus, blank=True, null=True)
+    known_encumbrances = models.CharField(max_length=200, blank=True, null=True)
     # Property Characteristics
     property_bedroom_number = models.IntegerField(default=0, blank=True, null=True)
     property_bathroom_number = models.IntegerField(default=0, blank=True, null=True)
     property_inside_sq_ft = models.IntegerField(default=0, blank=True, null=True)
     property_lot_size = models.IntegerField(default=0, blank=True, null=True)
+    construction = models.ForeignKey(Construction, blank=True, null=True)
     property_year_built = models.IntegerField(default=0, blank=True, null=True)
     # Tax Info
     auction_pending = models.BooleanField()

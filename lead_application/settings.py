@@ -34,6 +34,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     # This loads the index definitions, so it has to come first
+    'django.middleware.csrf.CsrfViewMiddleware',
     'autoload.middleware.AutoloadMiddleware',
 
     'django.middleware.common.CommonMiddleware',
@@ -53,6 +54,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
-TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
+TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),
+                 os.path.join(os.path.dirname(__file__), "leads/templates"))
 
 ROOT_URLCONF = 'urls'

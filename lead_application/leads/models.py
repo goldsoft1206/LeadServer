@@ -109,7 +109,14 @@ class Lead(models.Model):
     active_string.admin_order_field = 'active'
     
     def owner_name(self):
-        return self.first_name + " " + self.last_name
+        name = ""
+        if self.first_name is not None:
+            name += self.first_name
+            name += " "
+        if self.last_name is not None:
+            name += self.last_name
+        
+        return name
     
     def __unicode__(self):
         return self.owner_name()

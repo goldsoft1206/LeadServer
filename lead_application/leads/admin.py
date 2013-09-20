@@ -1,7 +1,14 @@
 from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, PointOfContact
 from django.contrib import admin
+from django.core.context_processors import csrf
+from django.views.decorators.csrf import csrf_protect
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django import forms
+from django.conf.urls import patterns
 
-
+class UploadFileForm(forms.Form):
+    file  = forms.FileField()
 
 class PointOfContactInline(admin.StackedInline):
     model = PointOfContact
@@ -34,6 +41,35 @@ class LeadAdmin(admin.ModelAdmin):
     def make_inactive(self, request, queryset):
         queryset.update(active=False)
     make_inactive.short_description = "Mark selected leads as inactive"
+    
+    def get_urls(self):
+        urls = super(LeadAdmin, self).get_urls()
+        my_urls = patterns('',
+            (r'^import/$', self.admin_site.admin_view(self.import_leads_view))
+        )
+        return my_urls + urls
+        
+    def import_leads_view(self, request):
+        
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                self.import_leads(request.FILES['file'])
+                return HttpResponseRedirect('/admin/leads/lead')
+        else:
+            form = UploadFileForm()
+            
+        c = {'form': form}
+        c.update(csrf(request))
+        return render_to_response('import.html', c)
+        
+    def import_leads(self, file):
+        """ Import Leads from the given file """
+        lines = file.readlines()
+        for line in lines[1:]:
+            fields = line.split(",")
+            lead = Lead(folio_id=fields[0].replace('"', ''))
+            lead.save()
 
 admin.site.register(Construction)
 admin.site.register(DealType)

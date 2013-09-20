@@ -26,6 +26,12 @@ class MailingType(models.Model):
     def __unicode__(self):
         return self.mailing_type
         
+class PropertyStatus(models.Model):
+    property_status = models.CharField(max_length=200)
+    
+    def __unicode__(self):
+        return self.property_status
+        
 class Status(models.Model):
     status = models.CharField(max_length=200)
     
@@ -60,6 +66,7 @@ class Lead(models.Model):
     property_city = models.CharField(max_length=200, blank=True, null=True)
     property_state = models.CharField(max_length=200, blank=True, null=True)
     property_zip_code = models.CharField(max_length=200, blank=True, null=True)
+    property_status = models.ForeignKey(PropertyStatus, blank=True, null=True)
     # Property Characteristics
     property_bedroom_number = models.IntegerField(default=0, blank=True, null=True)
     property_bathroom_number = models.IntegerField(default=0, blank=True, null=True)

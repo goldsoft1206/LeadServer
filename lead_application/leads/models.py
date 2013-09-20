@@ -8,6 +8,12 @@ class Investor(models.Model):
     def __unicode__(self):
         return self.name
         
+class ListSource(models.Model):
+    source = models.CharField(max_length=200)
+    
+    def __unicode__(self):
+        return self.source
+        
 class Status(models.Model):
     status = models.CharField(max_length=200)
     
@@ -18,6 +24,7 @@ class Lead(models.Model):
     # Core
     investor = models.ForeignKey(Investor, null=True)
     status = models.ForeignKey(Status, null=True)
+    list_source = models.ForeignKey(ListSource, null=True)
     active = models.BooleanField()
     
     # Owner Information

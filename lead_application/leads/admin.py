@@ -1,6 +1,8 @@
 from leads.models import Investor, Lead, PointOfContact
 from django.contrib import admin
 
+
+
 class PointOfContactInline(admin.StackedInline):
     model = PointOfContact
     extra = 1
@@ -22,6 +24,15 @@ class LeadAdmin(admin.ModelAdmin):
     ]
     
     inlines = [PointOfContactInline]
+    actions = ['make_active', 'make_inactive']
+    
+    def make_active(self, request, queryset):
+        queryset.update(active=True)
+    make_active.short_description = "Mark selected leads as active"
+
+    def make_inactive(self, request, queryset):
+        queryset.update(active=False)
+    make_inactive.short_description = "Mark selected leads as inactive"
 
 admin.site.register(Investor)
 admin.site.register(Lead, LeadAdmin)

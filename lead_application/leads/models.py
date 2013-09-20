@@ -2,6 +2,12 @@ import datetime
 from django.utils import timezone
 from django.db import models
 
+class DealType(models.Model):
+    deal_type = models.CharField(max_length=200)
+    
+    def __unicode__(self):
+        return self.deal_type
+
 class Investor(models.Model):
     name = models.CharField(max_length=200)
     
@@ -32,6 +38,7 @@ class Lead(models.Model):
     status = models.ForeignKey(Status, blank=True, null=True)
     list_source = models.ForeignKey(ListSource, blank=True, null=True)
     mailing_type = models.ForeignKey(MailingType, blank=True, null=True)
+    deal_type = models.ForeignKey(DealType, blank=True, null=True)
     active = models.BooleanField()
     
     # Owner Information

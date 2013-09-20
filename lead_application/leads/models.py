@@ -11,6 +11,7 @@ class Investor(models.Model):
 class Lead(models.Model):
     # Core
     investor = models.ForeignKey(Investor, null=True)
+    active = models.BooleanField()
     # status 
     
     # Owner Information
@@ -50,6 +51,14 @@ class Lead(models.Model):
     point_of_contact = models.CharField(max_length=200, blank=True, null=True)
     lender_verify_info = models.CharField(max_length=200, blank=True, null=True)
     loan_number = models.CharField(max_length=200, blank=True, null=True)
+    
+    def active_string(self):
+        if self.active:
+            return "ACTIVE"
+        else:
+            return "INACTIVE"
+    active_string.short_description = "Active"
+    active_string.admin_order_field = 'active'
     
     def owner_name(self):
         return self.first_name + " " + self.last_name

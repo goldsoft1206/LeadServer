@@ -44,6 +44,19 @@ indexes:
 
 - kind: leads_lead
   properties:
+  - name: active
+  - name: __key__
+    direction: desc
+
+- kind: leads_lead
+  properties:
+  - name: active
+    direction: desc
+  - name: __key__
+    direction: desc
+
+- kind: leads_lead
+  properties:
   - name: property_street_address
   - name: __key__
     direction: desc

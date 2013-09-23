@@ -4,5 +4,5 @@ Core
 - Lead Data - 7.75
 
 Import
-- CLient Communication - 0
+- Client Communication - .5+1/3
 - Logic = 2

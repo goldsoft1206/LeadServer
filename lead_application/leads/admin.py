@@ -31,6 +31,9 @@ csv_headers = [
                'Price',
                'OR Book Page'
                ]
+           
+csv_to_lead_field_mapping = {"Folio No":"folio_id",
+                             "Street Address":"owner_street_address"}
 
 class UploadFileForm(forms.Form):
     file  = forms.FileField()
@@ -94,13 +97,18 @@ class LeadAdmin(admin.ModelAdmin):
         reader = csv.DictReader(file, fieldnames=csv_headers, restval="")
         reader.next()
         for row in reader:
-            folio_id = self.getFieldData(row, "Folio No")
-            street_address = self.getFieldData(row, "Street Address")
-            lead = Lead(folio_id=folio_id, owner_street_address=street_address)
+            lead = Lead()
+            for column in csv_to_lead_field_mapping:
+                self.setFieldData(lead, row, column, csv_to_lead_field_mapping[column])
             lead.save()
     
     def getFieldData(self, row, field):
-        return row[field].replace('"', '').replace('=', '')
+        if field in row:
+            return row[field].replace('"', '').replace('=', '')
+        return ''
+        
+    def setFieldData(self, lead, row, columnName, fieldName):
+        setattr(lead, fieldName, self.getFieldData(row, columnName))
 
 admin.site.register(Construction)
 admin.site.register(DealType)

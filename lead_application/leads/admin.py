@@ -46,6 +46,8 @@ class PointOfContactInline(admin.StackedInline):
     ]
 
 class LeadAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('admin/css/import.css',),}
     list_display = ('active_string', 'status', 'property_street_address', 'owner_name', 'telephone1')
     list_filter = ('active',)
     fieldsets = [

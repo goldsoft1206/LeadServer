@@ -87,7 +87,7 @@ class LeadAdmin(admin.ModelAdmin):
             
         c = {'form': form}
         c.update(csrf(request))
-        return render_to_response('import.html', c)
+        return HttpResponseRedirect('/admin/leads/lead')
         
     def import_leads(self, file):
         """ Import Leads from the given file """

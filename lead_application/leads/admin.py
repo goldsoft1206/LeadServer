@@ -33,7 +33,11 @@ csv_headers = [
                ]
            
 csv_to_lead_field_mapping = {"Folio No":"folio_id",
-                             "Street Address":"owner_street_address"}
+                             "Street Address":"owner_street_address",
+                             "City":"owner_city",
+                             "State":"owner_state",
+                             "Zip Code":"owner_zip_code",
+                             "Situs":"property_street_address"}
 
 class UploadFileForm(forms.Form):
     file  = forms.FileField()

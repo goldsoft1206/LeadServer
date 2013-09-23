@@ -101,7 +101,10 @@ class LeadAdmin(admin.ModelAdmin):
         reader = csv.DictReader(file, fieldnames=csv_headers, restval="")
         reader.next()
         for row in reader:
-            lead = Lead()
+            owner_name = self.getFieldData(row, "Owner") + " " + self.getFieldData(row, "Owner Second")
+            owner_first_name = owner_name.split(' ')[0]
+            owner_last_name = " ".join(owner_name.split(' ')[1:])
+            lead = Lead(first_name=owner_first_name, last_name=owner_last_name)
             for column in csv_to_lead_field_mapping:
                 self.setFieldData(lead, row, column, csv_to_lead_field_mapping[column])
             lead.save()

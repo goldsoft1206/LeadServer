@@ -8,6 +8,7 @@ from django import forms
 from django.conf.urls import patterns
 
 import csv
+from datetime import datetime
 
 csv_headers = [
                "Folio No",
@@ -119,7 +120,9 @@ class LeadAdmin(admin.ModelAdmin):
         reader.next()
         for row in reader:
             owner_name = self.getFieldData(row, "Owner") + " " + self.getFieldData(row, "Owner Second")
-            lead = Lead(last_name=owner_name)
+            auction_date_string = self.getFieldData(row, "Date of Auction")
+            auction_date = datetime.strptime(auction_date_string, "%B %d, %Y")
+            lead = Lead(last_name=owner_name, auction_date=auction_date)
             for column in csv_to_lead_field_mapping:
                 self.setFieldData(lead, row, column, csv_to_lead_field_mapping[column])
             lead.save()

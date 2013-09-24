@@ -10,6 +10,10 @@ from django.conf.urls import patterns
 import csv
 from datetime import datetime
 
+from dbindexer.api import register_index
+
+register_index(Lead, {'property_street_address': 'icontains'})
+
 csv_headers = [
                "Folio No",
                "Date of Auction",
@@ -82,6 +86,8 @@ class LeadAdmin(admin.ModelAdmin):
     
     inlines = [PointOfContactInline, MailingHistoryInline]
     actions = ['make_active', 'make_inactive']
+    search_fields = ['property_street_address']
+    ordering = ('idxf_property_street_address_l_icontains',)
     
     def make_active(self, request, queryset):
         queryset.update(active=True)

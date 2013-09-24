@@ -57,6 +57,12 @@ indexes:
 
 - kind: leads_lead
   properties:
+  - name: idxf_property_street_address_l_icontains
+  - name: __key__
+    direction: desc
+
+- kind: leads_lead
+  properties:
   - name: property_street_address
   - name: __key__
     direction: desc

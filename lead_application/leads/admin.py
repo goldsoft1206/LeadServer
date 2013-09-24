@@ -1,4 +1,4 @@
-from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, PointOfContact
+from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, MailingHistory, PointOfContact
 from django.contrib import admin
 from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_protect
@@ -52,6 +52,10 @@ csv_to_lead_field_mapping = {"Folio No":"folio_id",
 
 class UploadFileForm(forms.Form):
     file  = forms.FileField()
+    
+class MailingHistoryInline(admin.StackedInline):
+    model = MailingHistory
+    extra = 1
 
 class PointOfContactInline(admin.StackedInline):
     model = PointOfContact
@@ -78,7 +82,7 @@ class LeadAdmin(admin.ModelAdmin):
         ('Mail/Campaign information', {'fields': ['cost', 'letters_mailed', 'can_mail_multiple_times', 'return_mail'], 'classes': ['collapse']}),
     ]
     
-    inlines = [PointOfContactInline]
+    inlines = [PointOfContactInline, MailingHistoryInline]
     actions = ['make_active', 'make_inactive']
     
     def make_active(self, request, queryset):

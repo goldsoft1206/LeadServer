@@ -130,6 +130,17 @@ class Lead(models.Model):
     
     def __unicode__(self):
         return self.owner_name()
+        
+class MailingHistory(models.Model):
+    class Meta:
+        verbose_name_plural = "mailing histories"
+        
+    lead = models.ForeignKey(Lead)
+    returned_envelope = models.BooleanField()
+    mailing_date = models.DateField(blank=True, null=True)
+    
+    def __unicode__(self):
+        return self.first_name + " " + self.last_name
 
 class PointOfContact(models.Model):
     lead = models.ForeignKey(Lead)

@@ -34,10 +34,6 @@ csv_headers = [
                ]
            
 csv_to_lead_field_mapping = {"Folio No":"folio_id",
-                             "Street Address":"owner_street_address",
-                             "City":"owner_city",
-                             "State":"owner_state",
-                             "Zip Code":"owner_zip_code",
                              "Situs":"property_street_address",
                              "Assessed Value":"assessed_value",
                              "Use Code":"use_code",
@@ -120,13 +116,37 @@ class LeadAdmin(admin.ModelAdmin):
         reader = csv.DictReader(file, fieldnames=csv_headers, restval="")
         reader.next()
         for row in reader:
+            folio_id = self.getFieldData(row, "Folio No")
             owner_name = self.getFieldData(row, "Owner") + " " + self.getFieldData(row, "Owner Second")
+            owner_street_address = self.getFieldData(row, "Street Address")
+            owner_city = self.getFieldData(row, "City")
+            owner_state = self.getFieldData(row, "State")
+            owner_zip_code = self.getFieldData(row, "Zip Code")
             auction_date_string = self.getFieldData(row, "Date of Auction")
-            auction_date = datetime.strptime(auction_date_string, "%B %d, %Y")
+            try:
+                auction_date = datetime.strptime(auction_date_string, "%B %d, %Y")
+            except ValueError:
+                auction_date = None
             
-            lead = Lead(last_name=owner_name, auction_date=auction_date, annual_bill_balance_year=datetime.now().year)
-            for column in csv_to_lead_field_mapping:
-                self.setFieldData(lead, row, column, csv_to_lead_field_mapping[column])
+            lead = Lead.objects.filter(folio_id=folio_id)
+            if len(lead) == 0:
+                lead = None
+            else:
+                lead = lead[0]
+            if lead is None:
+                lead = Lead(last_name=owner_name, annual_bill_balance_year=datetime.now().year,
+                            owner_street_address=owner_street_address, owner_city=owner_city, owner_state=owner_state, owner_zip_code=owner_zip_code)
+                            
+                lead.auction_date = auction_date 
+                for column in csv_to_lead_field_mapping:
+                    self.setFieldData(lead, row, column, csv_to_lead_field_mapping[column])
+            else:
+                lead.auction_date = auction_date
+                lead.annual_bill_balance_year = datetime.now().year
+                
+                lead.pointofcontact_set.create(last_name=owner_name, street_address=owner_street_address,
+                        city=owner_city, state=owner_state, zip_code=owner_zip_code)
+                
             lead.save()
     
     def getFieldData(self, row, field):

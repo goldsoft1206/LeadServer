@@ -78,6 +78,8 @@ class Lead(models.Model):
     use_code = models.CharField(max_length=200, blank=True, null=True)
     legal_description = models.CharField(max_length=200, blank=True, null=True)
     total_balance = models.CharField(max_length=200, blank=True, null=True)
+    annual_bill_balance = models.CharField(max_length=200, blank=True, null=True)
+    annual_bill_balance_year = models.IntegerField(default=0, blank=True, null=True)
     tax_auction = models.CharField(max_length=200, blank=True, null=True)
     primary_zone = models.CharField(max_length=200, blank=True, null=True)
     land_use = models.CharField(max_length=200, blank=True, null=True)

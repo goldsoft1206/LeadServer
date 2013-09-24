@@ -66,7 +66,7 @@ class PointOfContactInline(admin.StackedInline):
 class LeadAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('admin/css/import.css',),}
-    list_display = ('active_string', 'status', 'property_street_address', 'owner_name', 'telephone1')
+    list_display = ('active_string', 'status', 'property_street_address', 'owner_name', 'telephone1', 'telephone2', 'auction_date')
     list_filter = ('active',)
     fieldsets = [
         (None,                  {'fields': ['investor', 'status', 'list_source', 'mailing_type', 'deal_type', 'active']}),    

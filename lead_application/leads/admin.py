@@ -37,7 +37,18 @@ csv_to_lead_field_mapping = {"Folio No":"folio_id",
                              "City":"owner_city",
                              "State":"owner_state",
                              "Zip Code":"owner_zip_code",
-                             "Situs":"property_street_address"}
+                             "Situs":"property_street_address",
+                             "Assessed Value":"assessed_value",
+                             "Use Code":"use_code",
+                             "Legal Description":"legal_description",
+                             "Total Balance":"total_balance",
+                             "Deed Sale":"tax_auction",
+                             "Primary Zone":"primary_zone",
+                             "Land Use":"land_use",
+                             "Previos Sale":"previous_sale",
+                             "Price":"price",
+                             "OR Book Page":"or_book_page",
+                             }
 
 class UploadFileForm(forms.Form):
     file  = forms.FileField()
@@ -60,7 +71,9 @@ class LeadAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,                  {'fields': ['investor', 'status', 'list_source', 'mailing_type', 'deal_type', 'active']}),    
         ('Owner',               {'fields': ['deceased', ('first_name', 'last_name'), 'owner_street_address', ('owner_city', 'owner_state', 'owner_zip_code'), ('telephone1', 'telephone2', 'telephone3'), 'email'], 'classes': ['collapse']}),
-        ('Property information', {'fields': ['folio_id', 'property_street_address', ('property_city', 'property_state', 'property_zip_code'), 'property_status', 'known_encumbrances', 'property_bedroom_number', 'property_bathroom_number', 'property_inside_sq_ft', 'property_lot_size', 'construction', 'property_year_built', 'auction_pending', 'balance_owed', 'auction_date'], 'classes': ['collapse']}),
+        ('Property information', {'fields': ['folio_id', 'property_street_address', ('property_city', 'property_state', 'property_zip_code'), 'property_status', 'known_encumbrances', 
+                                             'assessed_value', 'use_code', 'legal_description', 'total_balance', 'tax_auction', 'primary_zone', 'land_use', 'previous_sale', 'price', 'or_book_page' ,
+                                             'property_bedroom_number', 'property_bathroom_number', 'property_inside_sq_ft', 'property_lot_size', 'construction', 'property_year_built', 'auction_pending', 'balance_owed', 'auction_date'], 'classes': ['collapse']}),
         ('Short Sale Lender information', {'fields': ['short_sale_lender_name', 'short_sale_lender_telephone', 'short_sale_lender_letter_fax', 'point_of_contact', 'lender_verify_info', 'loan_number'], 'classes': ['collapse']}),
         ('Mail/Campaign information', {'fields': ['cost', 'letters_mailed', 'can_mail_multiple_times', 'return_mail'], 'classes': ['collapse']}),
     ]
@@ -102,9 +115,7 @@ class LeadAdmin(admin.ModelAdmin):
         reader.next()
         for row in reader:
             owner_name = self.getFieldData(row, "Owner") + " " + self.getFieldData(row, "Owner Second")
-            owner_first_name = owner_name.split(' ')[0]
-            owner_last_name = " ".join(owner_name.split(' ')[1:])
-            lead = Lead(first_name=owner_first_name, last_name=owner_last_name)
+            lead = Lead(last_name=owner_name)
             for column in csv_to_lead_field_mapping:
                 self.setFieldData(lead, row, column, csv_to_lead_field_mapping[column])
             lead.save()

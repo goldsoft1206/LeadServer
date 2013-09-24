@@ -1,5 +1,5 @@
 Core
-- Client Communication - 1.25 + 1/3
+- Client Communication - 1.75 + 1/3
 - Deploy - 4.25
 - Lead Data - 7.75
 

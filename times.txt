@@ -10,3 +10,6 @@ Import
 
 Google Analytics
 - Research - .25
+
+Search
+- Logic - .5

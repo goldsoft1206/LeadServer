@@ -45,6 +45,10 @@ class Status(models.Model):
         return self.status
 
 class Lead(models.Model):
+    # Admin Data
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    
     # Core
     investor = models.ForeignKey(Investor, blank=True, null=True)
     status = models.ForeignKey(Status, blank=True, null=True)

@@ -72,10 +72,12 @@ class PointOfContactInline(admin.StackedInline):
 class LeadAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('admin/css/import.css',),}
+        
+    readonly_fields = ('created_at', 'updated_at',)
     list_display = ('active_string', 'status', 'property_street_address', 'owner_name', 'telephone1', 'telephone2', 'auction_date')
     list_filter = ('active',)
     fieldsets = [
-        (None,                  {'fields': ['investor', 'status', 'list_source', 'mailing_type', 'deal_type', 'active']}),    
+        (None,                  {'fields': [('created_at', 'updated_at'), 'investor', 'status', 'list_source', 'mailing_type', 'deal_type', 'active']}),    
         ('Owner',               {'fields': ['deceased', ('first_name', 'last_name'), 'owner_street_address', ('owner_city', 'owner_state', 'owner_zip_code'), ('telephone1', 'telephone2', 'telephone3'), 'email'], 'classes': ['collapse']}),
         ('Property information', {'fields': ['folio_id', 'property_street_address', ('property_city', 'property_state', 'property_zip_code'), 'property_status', 'known_encumbrances', 
                                              'assessed_value', 'use_code', 'legal_description', 'total_balance', ('annual_bill_balance', 'annual_bill_balance_year'), 'tax_auction', 'primary_zone', 'land_use', 'previous_sale', 'price', 'or_book_page' ,

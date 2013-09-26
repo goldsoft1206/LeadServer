@@ -1,6 +1,6 @@
 Core
 - Client Communication - 2 + 1/3
-- Deploy - 4.25
+- Deploy - 5
 - Lead Data - 8
 
 Import

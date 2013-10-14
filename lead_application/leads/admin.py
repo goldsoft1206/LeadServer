@@ -34,7 +34,42 @@ csv_headers = [
                'Land Use',
                'Previous Sale',
                'Price',
-               'OR Book Page'
+               'OR Book Page',
+               'Investor',
+               'Status',
+               'List Source',
+               'Mailing Type',
+               'Deal Type',
+               'Active',
+               'Deceased',
+               'Telephone 1',
+               'Telephone 2',
+               'Telephone 3',
+               'Email',
+               'Property Street Address',
+               'Property City',
+               'Property State',
+               'Property Zip Code',
+               'Property Status',
+               'Known Encumbrances',
+               'Bedroom Number',
+               'Bathroom Number',
+               'Inside SQ FT',
+               'Lot Size',
+               'Construction',
+               'Property Year Built',
+               'Auction Pending',
+               'Balance Owed',
+               'Short Sale Lender Name',
+               'Short Sale Telephone',
+               'Short Sale Fax',
+               'Short Sale PoC',
+               'Lender Verify Info',
+               'Loan Number',
+               'Mailing Cost',
+               'Letters Mailed',
+               'Can Mail Multiple Times',
+               'Return Mail'
                ]
            
 csv_to_lead_field_mapping = {"Folio No":"folio_id",
@@ -50,6 +85,32 @@ csv_to_lead_field_mapping = {"Folio No":"folio_id",
                              "Previos Sale":"previous_sale",
                              "Price":"price",
                              "OR Book Page":"or_book_page",
+                             "Property Street Address":"property_street_address",
+                             "Property City":"property_city",
+                             "Property State":"property_state",
+                             "Property Zip Code":"property_zip_code",
+                             'Known Encumbrances':"known_encumbrances",
+                             'Bedroom Number':"property_bedroom_number",
+                             'Bathroom Number':"property_bathroom_number",
+                             'Inside SQ FT':"property_inside_sq_ft",
+                             'Lot Size':"property_lot_size",
+                             'Property Year Built':"property_year_built",
+                             'Balance Owed':"balance_owed",
+                             'Short Sale Lender Name':"short_sale_lender_name",
+                             'Short Sale Telephone':"short_sale_lender_telephone",
+                             'Short Sale Fax':"short_sale_lender_letter_fax",
+                             'Short Sale PoC':"point_of_contact",
+                             'Lender Verify Info':"lender_verify_info",
+                             'Loan Number':"loan_number",
+                             'Mailing Cost':"cost",
+                             'Letters Mailed':"letters_mailed"
+                             }
+                             
+csv_to_lead_boolean_fields = {"Active":"active",
+                              "Deceased":"deceased",
+                              "Auction Pending":"auction_pending",
+                              "Can Mail Multiple Times":"can_mail_multiple_times",
+                              "Return Mail":"return_mail"
                              }
 
 class UploadFileForm(forms.Form):
@@ -130,11 +191,86 @@ class LeadAdmin(admin.ModelAdmin):
             owner_city = self.getFieldData(row, "City")
             owner_state = self.getFieldData(row, "State")
             owner_zip_code = self.getFieldData(row, "Zip Code")
+            owner_telephone1 = self.getFieldData(row, "Telephone 1")
+            owner_telephone2 = self.getFieldData(row, "Telephone 2")
+            owner_telephone3 = self.getFieldData(row, "Telephone 3")
+            owner_email = self.getFieldData(row, "Email")
+            
             auction_date_string = self.getFieldData(row, "Date of Auction")
             try:
                 auction_date = datetime.strptime(auction_date_string, "%B %d, %Y")
             except ValueError:
                 auction_date = None
+            
+            investor_string = self.getFieldData(row, "Investor")
+            investor = None
+            if not investor_string == "":
+                investors = Investor.objects.filter(name=investor_string)
+                if len(investors) == 0:
+                    investor = Investor(name=investor_string)
+                    investor.save()
+                else:
+                    investor = investors[0]
+                
+            status_string = self.getFieldData(row, "Status")
+            status = None
+            if not status_string == "":
+                statuses = Status.objects.filter(status=status_string)
+                if len(statuses) == 0:
+                    status = Status(status=status_string)
+                    status.save()
+                else:
+                    status = statuses[0]
+                
+            list_source_string = self.getFieldData(row, "List Source")
+            source = None
+            if not list_source_string == "":
+                sources = ListSource.objects.filter(source=list_source_string)
+                if len(sources) == 0:
+                    source = ListSource(source=list_source_string)
+                    source.save()
+                else:
+                    source = sources[0]
+                
+            mailing_type_string = self.getFieldData(row, "Mailing Type")
+            mailing_type = None
+            if not mailing_type_string == "":
+                mailing_types = MailingType.objects.filter(mailing_type=mailing_type_string)
+                if len(mailing_types) == 0:
+                    mailing_type = MailingType(mailing_type=mailing_type_string)
+                    mailing_type.save()
+                else:
+                    mailing_type = mailing_types[0]
+                
+            deal_type_string = self.getFieldData(row, "Deal Type")
+            deal_type = None
+            if not deal_type_string == "":
+                deal_types = DealType.objects.filter(deal_type=deal_type_string)
+                if len(deal_types) == 0:
+                    deal_type = DealType(deal_type=deal_type_string)
+                    deal_type.save()
+                else:
+                    deal_type = deal_types[0]
+                
+            property_status_string = self.getFieldData(row, "Property Status")
+            property_status = None
+            if not property_status_string == "":
+                property_statuses = PropertyStatus.objects.filter(property_status=property_status_string)
+                if len(property_statuses) == 0:
+                    property_status = PropertyStatus(property_status=property_status_string)
+                    property_status.save()
+                else:
+                    property_status = property_statuses[0]
+                    
+            construction_string = self.getFieldData(row, "Construction")
+            construction = None
+            if not construction_string == "":
+                constructions = Construction.objects.filter(construction_type=construction_string)
+                if len(constructions) == 0:
+                    construction = Construction(construction_type=construction_string)
+                    construction.save()
+                else:
+                    construction = constructions[0]
             
             lead = Lead.objects.filter(folio_id=folio_id)
             if len(lead) == 0:
@@ -143,9 +279,20 @@ class LeadAdmin(admin.ModelAdmin):
                 lead = lead[0]
             if lead is None:
                 lead = Lead(last_name=owner_name, annual_bill_balance_year=datetime.now().year,
-                            owner_street_address=owner_street_address, owner_city=owner_city, owner_state=owner_state, owner_zip_code=owner_zip_code)
+                            owner_street_address=owner_street_address, owner_city=owner_city, owner_state=owner_state, owner_zip_code=owner_zip_code,
+                            telephone1=owner_telephone1, telephone2=owner_telephone2, telephone3=owner_telephone3, email=owner_email)
                             
-                lead.auction_date = auction_date 
+                lead.auction_date = auction_date
+                self.setForeignKey(lead, investor, "investor")
+                self.setForeignKey(lead, status, "status")
+                self.setForeignKey(lead, source, "list_source")
+                self.setForeignKey(lead, mailing_type, "mailing_type")
+                self.setForeignKey(lead, deal_type, "deal_type")
+                self.setForeignKey(lead, property_status, "property_status")
+                self.setForeignKey(lead, construction, "construction")
+                
+                for column in csv_to_lead_boolean_fields:
+                    self.setBooleanField(lead, row, column, csv_to_lead_boolean_fields[column])
                 for column in csv_to_lead_field_mapping:
                     self.setFieldData(lead, row, column, csv_to_lead_field_mapping[column])
             else:
@@ -153,7 +300,8 @@ class LeadAdmin(admin.ModelAdmin):
                 lead.annual_bill_balance_year = datetime.now().year
                 
                 lead.pointofcontact_set.create(last_name=owner_name, street_address=owner_street_address,
-                        city=owner_city, state=owner_state, zip_code=owner_zip_code)
+                        city=owner_city, state=owner_state, zip_code=owner_zip_code,
+                        telephone1=owner_telephone1, telephone2=owner_telephone2, telephone3=owner_telephone3, email=owner_email)
                 
             lead.save()
     
@@ -164,6 +312,16 @@ class LeadAdmin(admin.ModelAdmin):
         
     def setFieldData(self, lead, row, columnName, fieldName):
         setattr(lead, fieldName, self.getFieldData(row, columnName))
+        
+    def setForeignKey(self, lead, field, fieldName):
+        """ Set a foreign key value """
+        if field is not None:
+            setattr(lead, fieldName, field)
+            
+    def setBooleanField(self, lead, row, columnName, fieldName):
+        """ Set a boolean field of lead data """
+        boolean_string = self.getFieldData(row, columnName)
+        setattr(lead, fieldName, boolean_string.strip().lower() == "yes")
 
 admin.site.register(Construction)
 admin.site.register(DealType)

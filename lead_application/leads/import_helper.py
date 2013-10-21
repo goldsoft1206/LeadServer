@@ -1,4 +1,5 @@
 from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, MailingHistory, PointOfContact
+from leads.person import Person
 
 import csv
 from datetime import datetime
@@ -109,15 +110,8 @@ def import_leads(file):
     reader = csv.DictReader(file, restval="")
     for row in reader:
         folio_id = GetFieldData(row, "Folio No")
-        owner_name = GetFieldData(row, "Owner") + " " + GetFieldData(row, "Owner Second")
-        owner_street_address = GetFieldData(row, "Street Address")
-        owner_city = GetFieldData(row, "City")
-        owner_state = GetFieldData(row, "State")
-        owner_zip_code = GetFieldData(row, "Zip Code")
-        owner_telephone1 = GetFieldData(row, "Telephone 1")
-        owner_telephone2 = GetFieldData(row, "Telephone 2")
-        owner_telephone3 = GetFieldData(row, "Telephone 3")
-        owner_email = GetFieldData(row, "Email")
+        owner = Person()
+        owner.loadFromOwnerData(row, GetFieldData)
         
         auction_date_string = GetFieldData(row, "Date of Auction")
         try:
@@ -125,39 +119,36 @@ def import_leads(file):
         except ValueError:
             auction_date = None
         
-        lead = Lead.objects.filter(folio_id=folio_id)
-        if len(lead) == 0:
-            lead = None
+        leads = Lead.objects.filter(folio_id=folio_id)
+        needNewLead = len(lead) == 0
+        if needNewLead:
+            lead = Lead()
         else:
             lead = lead[0]
-        if lead is None:
-            lead = Lead(last_name=owner_name, annual_bill_balance_year=datetime.now().year,
-                        owner_street_address=owner_street_address, owner_city=owner_city, owner_state=owner_state, owner_zip_code=owner_zip_code,
-                        telephone1=owner_telephone1, telephone2=owner_telephone2, telephone3=owner_telephone3, email=owner_email)
-                        
-            lead.auction_date = auction_date
-            SetRelatedRecord(lead, row, "Investor", "investor", Investor, "name")
-            SetRelatedRecord(lead, row, "Status", "status", Status, "status")
-            SetRelatedRecord(lead, row, "List Source", "list_source", ListSource, "source")
-            SetRelatedRecord(lead, row, "Mailing Type", "mailing_type", MailingType, "mailing_type")
-            SetRelatedRecord(lead, row, "Deal Type", "deal_type", DealType, "deal_type")
-            SetRelatedRecord(lead, row, "Property Status", "property_status", PropertyStatus, "property_status")
-            SetRelatedRecord(lead, row, "Construction", "construction", Construction, "construction_type")
             
-            for column in csv_to_lead_boolean_fields:
-                SetBooleanField(lead, row, column, csv_to_lead_boolean_fields[column])
-            for column in csv_to_lead_field_mapping:
-                SetFieldData(lead, row, column, csv_to_lead_field_mapping[column])
+        lead.auction_date = auction_date
+        lead.annual_bill_balance_year = datetime.now().year
+        
+        SetRelatedRecord(lead, row, "Investor", "investor", Investor, "name")
+        SetRelatedRecord(lead, row, "Status", "status", Status, "status")
+        SetRelatedRecord(lead, row, "List Source", "list_source", ListSource, "source")
+        SetRelatedRecord(lead, row, "Mailing Type", "mailing_type", MailingType, "mailing_type")
+        SetRelatedRecord(lead, row, "Deal Type", "deal_type", DealType, "deal_type")
+        SetRelatedRecord(lead, row, "Property Status", "property_status", PropertyStatus, "property_status")
+        SetRelatedRecord(lead, row, "Construction", "construction", Construction, "construction_type")
+        
+        for column in csv_to_lead_boolean_fields:
+            SetBooleanField(lead, row, column, csv_to_lead_boolean_fields[column])
+        for column in csv_to_lead_field_mapping:
+            SetFieldData(lead, row, column, csv_to_lead_field_mapping[column])
+            
+        if needNewLead:
+            lead = Lead()
+            owner.addOwnerDataToLead(lead)
         else:
-            lead.auction_date = auction_date
-            lead.annual_bill_balance_year = datetime.now().year
-            
-            lead.pointofcontact_set.create(last_name=owner_name, street_address=owner_street_address,
-                    city=owner_city, state=owner_state, zip_code=owner_zip_code,
-                    telephone1=owner_telephone1, telephone2=owner_telephone2, telephone3=owner_telephone3, email=owner_email)
+            owner.addPoCDataToLead(lead)
             
         lead.save()
-        return "Blah Blah"
 
 def GetFieldData(row, field):
     if field in row:

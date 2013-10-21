@@ -311,7 +311,9 @@ class LeadAdmin(admin.ModelAdmin):
         return ''
         
     def setFieldData(self, lead, row, columnName, fieldName):
-        setattr(lead, fieldName, self.getFieldData(row, columnName))
+        data = self.getFieldData(row, columnName)
+        if data != "":
+            setattr(lead, fieldName, data)
         
     def setForeignKey(self, lead, field, fieldName):
         """ Set a foreign key value """

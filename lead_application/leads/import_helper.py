@@ -108,6 +108,7 @@ csv_to_lead_boolean_fields = {"Active":"active",
 def import_leads(file):
     """ Import Leads from the given file """
     reader = csv.DictReader(file, restval="")
+    # GetPoCPeople(reader)
     for row in reader:
         folio_id = GetFieldData(row, "Folio No")
         owner = Person()
@@ -120,11 +121,11 @@ def import_leads(file):
             auction_date = None
         
         leads = Lead.objects.filter(folio_id=folio_id)
-        needNewLead = len(lead) == 0
+        needNewLead = len(leads) == 0
         if needNewLead:
             lead = Lead()
         else:
-            lead = lead[0]
+            lead = leads[0]
             
         lead.auction_date = auction_date
         lead.annual_bill_balance_year = datetime.now().year
@@ -188,3 +189,7 @@ def GetRelatedRecord(row, columnName, recordClass, fieldName):
             record = records[0]
             
     return record
+    
+def GetPoCPeople(reader):
+    """ Get Point of Contact People Wrapper """
+    print reader.fieldnames

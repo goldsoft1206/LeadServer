@@ -1,10 +1,12 @@
 from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, MailingHistory, PointOfContact
 from leads.person import Person
 
+from leads.csv_headers import *
+
 import csv
 from datetime import datetime
 
-csv_headers = [
+lead_data_headers = [
                "Folio No",
                "Date of Auction",
                "Owner",
@@ -62,58 +64,38 @@ csv_headers = [
                'Return Mail'
                ]
                
-csv_poc_headers = ["PoC First Name",
-                   "PoC Last Name",
-                   "PoC Email",
-                   "PoC Street Address",
-                   "PoC City",
-                   "PoC State",
-                   "PoC Zip Code",
-                   "PoC Telephone 1",
-                   "PoC Telephone 2",
-                   "PoC Telephone 3"]
-           
-csv_to_lead_field_mapping = {"Folio No":"folio_id",
-                             "Situs":"property_street_address",
-                             "Assessed Value":"assessed_value",
-                             "Use Code":"use_code",
-                             "Legal Description":"legal_description",
-                             "Total Balance":"total_balance",
-                             "Annual Bill Balance (2012)":"annual_bill_balance",
-                             "Deed Sale":"tax_auction",
-                             "Primary Zone":"primary_zone",
-                             "Land Use":"land_use",
-                             "Previos Sale":"previous_sale",
-                             "Price":"price",
-                             "OR Book Page":"or_book_page",
-                             "Property Street Address":"property_street_address",
-                             "Property City":"property_city",
-                             "Property State":"property_state",
-                             "Property Zip Code":"property_zip_code",
-                             'Known Encumbrances':"known_encumbrances",
-                             'Bedroom Number':"property_bedroom_number",
-                             'Bathroom Number':"property_bathroom_number",
-                             'Inside SQ FT':"property_inside_sq_ft",
-                             'Lot Size':"property_lot_size",
-                             'Property Year Built':"property_year_built",
-                             'Balance Owed':"balance_owed",
-                             'Short Sale Lender Name':"short_sale_lender_name",
-                             'Short Sale Telephone':"short_sale_lender_telephone",
-                             'Short Sale Fax':"short_sale_lender_letter_fax",
-                             'Short Sale PoC':"point_of_contact",
-                             'Lender Verify Info':"lender_verify_info",
-                             'Loan Number':"loan_number",
-                             'Mailing Cost':"cost",
-                             'Letters Mailed':"letters_mailed"
-                             }
-                             
-csv_to_lead_boolean_fields = {"Active":"active",
-                              "Deceased":"deceased",
-                              "Auction Pending":"auction_pending",
-                              "Can Mail Multiple Times":"can_mail_multiple_times",
-                              "Return Mail":"return_mail"
-                             }
-                             
+lead_data_to_always_import = [FOLIO_ID,
+                              SITUS,
+                              ASSESSED_VALUE,
+                              USE_CODE,
+                              "Legal Description",
+                              "Total Balance",
+                              "Annual Bill Balance (2012)",
+                              "Deed Sale",
+                              "Primary Zone",
+                              "Land Use",
+                              "Previos Sale",
+                              "Price",
+                              "OR Book Page",
+                              "Property Street Address",
+                              "Property City",
+                              "Property State",
+                              "Property Zip Code",
+                              'Known Encumbrances',
+                              'Bedroom Number',
+                              'Bathroom Number',
+                              'Inside SQ FT',
+                              'Lot Size',
+                              'Property Year Built',
+                              'Balance Owed',
+                              'Short Sale Lender Name',
+                              'Short Sale Telephone',
+                              'Short Sale Fax',
+                              'Short Sale PoC',
+                              'Lender Verify Info',
+                              'Loan Number',
+                              'Mailing Cost',
+                              'Letters Mailed']
     
     
 def import_leads(file):
@@ -154,7 +136,7 @@ def import_leads(file):
         
         for column in csv_to_lead_boolean_fields:
             SetBooleanField(lead, row, column, csv_to_lead_boolean_fields[column])
-        for column in csv_to_lead_field_mapping:
+        for column in lead_data_to_always_import:
             SetFieldData(lead, row, column, csv_to_lead_field_mapping[column])
           
         lead.save()
@@ -212,7 +194,7 @@ def GetPoCSuffixes(reader):
     """ Get Point of Contact People suffixes """
     pocSuffixes = {}
     for field in reader.fieldnames:
-        if field in csv_headers:
+        if field in lead_data_headers:
            continue
         suffix = field
         for header in csv_poc_headers:

@@ -1,14 +1,4 @@
-
-csv_poc_headers = {"PoC First Name":"first_name",
-                   "PoC Last Name":"last_name",
-                   "PoC Email":"email",
-                   "PoC Street Address":"street_address",
-                   "PoC City":"city",
-                   "PoC State":"state",
-                   "PoC Zip Code":"zip_code",
-                   "PoC Telephone 1":"telephone1",
-                   "PoC Telephone 2":"telephone2",
-                   "PoC Telephone 3":"telephone3"}
+from leads.csv_headers import *
 
 class Person:
     """ A class to represent a person """
@@ -28,7 +18,7 @@ class Person:
     
     def loadFromOwnerData(self, row, GetFieldData):
         """ Load Person Data from a row """
-        self.first_name,
+        self.first_name = ""
         self.last_name = GetFieldData(row, "Owner") + " " + GetFieldData(row, "Owner Second")
         self.street_address = GetFieldData(row, "Street Address")
         self.city = GetFieldData(row, "City")

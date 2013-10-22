@@ -12,34 +12,87 @@ export_headers = [SITUS,
                   OWNER_CITY,
                   OWNER_STATE,
                   OWNER_ZIP_CODE]
+                  
+poc_export_headers = [POC_FIRST_NAME,
+                      POC_LAST_NAME,
+                      POC_STREET_ADDRESS,
+                      POC_CITY,
+                      POC_STATE,
+                      POC_ZIP_CODE]
 
 def export_leads(leads):
     """ Export the given leads """
     response = GetResponse()
     writer = csv.writer(response)
     headers = GetHeaders(leads)
-    data = GetData(leads)
+    data = GetData(leads, headers)
     writer.writerow(headers)
     writer.writerows(data)
     return response
     
 def GetHeaders(leads):
     """ Return the column headers for the csv file """
-    return export_headers
+    return export_headers + GetPoCHeaders(leads)
     
-def GetData(leads):
+def GetPoCHeaders(leads):
+    """ Return the necessary PoC Headers """
+    max = 0
+    for lead in leads:
+        numPoCs = lead.pointofcontact_set.count()
+        if numPoCs > max:
+            max = numPoCs
+    
+    headers = []
+    for i in range(max):
+        for header in poc_export_headers:
+            headers.append("{0} {1}".format(header, i+1))
+    return headers
+    
+def GetData(leads, headers):
     """ Return the data for all the leads """
     data = []
     for lead in leads:
-        data.append(GetDataFromLead(lead))
+        data.append(GetDataFromLead(lead, headers))
     return data
     
-def GetDataFromLead(lead):
+def GetDataFromLead(lead, headers):
     """ Get the text data from a single lead """
     data = []
-    for header in export_headers:
-        data.append(getattr(lead, csv_to_lead_field_mapping[header]))
+    
+    for header in headers:
+        fieldData = ""
+        if header in export_headers:
+            fieldData = GetLeadData(lead, header)
+        else:
+            fieldData = GetPoCData(lead, header)
+        data.append(fieldData)
     return data
+    
+def GetLeadData(lead, header):
+    """ Get Data from a particular lead field """
+    return getattr(lead, csv_to_lead_field_mapping[header])
+    
+def GetPoCData(lead, header):
+    """ Get Data from a particular lead field """
+    poc, realHeader = GetPointOfContactForHeader(lead, header)
+    
+    if poc is not None:
+        return getattr(poc, csv_poc_headers[realHeader])
+    else:
+        return ""
+    
+def GetPointOfContactForHeader(lead, header):
+    """ Return the Point of COntact associated with a particular header for a lead """
+    poc = None
+    pocIndexString = header
+    
+    for pocHeader in poc_export_headers:
+        pocIndexString = pocIndexString.replace(pocHeader, "").strip()
+    pocIndex = int(pocIndexString)
+    
+    if pocIndex < lead.pointofcontact_set.count():
+        poc = lead.pointofcontact_set.all()[pocIndex]
+    return poc, header.replace(pocIndexString, "").strip()
     
 def GetResponse():
     """ Return the HTTP Response """

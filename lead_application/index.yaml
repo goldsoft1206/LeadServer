@@ -32,6 +32,16 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: leads_construction
+  properties:
+  - name: __key__
+    direction: desc
+
+- kind: leads_dealtype
+  properties:
+  - name: __key__
+    direction: desc
+
 - kind: leads_investor
   properties:
   - name: __key__
@@ -91,6 +101,16 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: leads_listsource
+  properties:
+  - name: __key__
+    direction: desc
+
+- kind: leads_mailingtype
+  properties:
+  - name: __key__
+    direction: desc
+
 - kind: leads_poll
   properties:
   - name: __key__
@@ -106,5 +126,15 @@ indexes:
   properties:
   - name: pub_date
     direction: desc
+  - name: __key__
+    direction: desc
+
+- kind: leads_propertystatus
+  properties:
+  - name: __key__
+    direction: desc
+
+- kind: leads_status
+  properties:
   - name: __key__
     direction: desc

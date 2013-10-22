@@ -49,7 +49,7 @@ class LeadAdmin(admin.ModelAdmin):
     
     inlines = [PointOfContactInline, MailingHistoryInline]
     actions = ['make_active', 'make_inactive']
-    search_fields = ['property_street_address']
+    # search_fields = ['property_street_address']
     ordering = ('idxf_property_street_address_l_icontains',)
     
     def make_active(self, request, queryset):

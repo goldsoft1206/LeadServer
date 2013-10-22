@@ -1,9 +1,33 @@
 
+csv_poc_headers = {"PoC First Name":"first_name",
+                   "PoC Last Name":"last_name",
+                   "PoC Email":"email",
+                   "PoC Street Address":"street_address",
+                   "PoC City":"city",
+                   "PoC State":"state",
+                   "PoC Zip Code":"zip_code",
+                   "PoC Telephone 1":"telephone1",
+                   "PoC Telephone 2":"telephone2",
+                   "PoC Telephone 3":"telephone3"}
+
 class Person:
     """ A class to represent a person """
     
+    def __init__(self):
+        """ Initialize the Person """
+        self.first_name = ""
+        self.last_name = ""
+        self.street_address = ""
+        self.city = ""
+        self.state = ""
+        self.zip_code = ""
+        self.telephone1 = ""
+        self.telephone2 = ""
+        self.telephone3 = ""
+        self.email = ""
+    
     def loadFromOwnerData(self, row, GetFieldData):
-        """  """
+        """ Load Person Data from a row """
         self.first_name = ""
         self.last_name = GetFieldData(row, "Owner") + " " + GetFieldData(row, "Owner Second")
         self.street_address = GetFieldData(row, "Street Address")
@@ -14,6 +38,14 @@ class Person:
         self.telephone2 = GetFieldData(row, "Telephone 2")
         self.telephone3 = GetFieldData(row, "Telephone 3")
         self.email = GetFieldData(row, "Email")
+        
+    def loadFromPoCData(self, row, suffixHeaders, SetFieldData):
+        """ Load PoC Data from a row with a given suffix """
+        for fullHeader in suffixHeaders:
+            for header in csv_poc_headers:
+                if header in fullHeader:
+                    SetFieldData(self, row, fullHeader, csv_poc_headers[header], ignoreEmptyString=True)
+                    break
         
     def addOwnerDataToLead(self, lead):
         """ Add Owner's data to lead as a new Owner """
@@ -29,6 +61,6 @@ class Person:
         
     def addPoCDataToLead(self, lead):
         """ Add Person's data to lead as a new Point of Contact """
-        lead.pointofcontact_set.create(last_name=self.last_name, street_address=self.street_address,
+        lead.pointofcontact_set.create(first_name=self.first_name, last_name=self.last_name, street_address=self.street_address,
                     city=self.city, state=self.state, zip_code=self.zip_code,
                     telephone1=self.telephone1, telephone2=self.telephone2, telephone3=self.telephone3, email=self.email)

@@ -61,6 +61,17 @@ csv_headers = [
                'Can Mail Multiple Times',
                'Return Mail'
                ]
+               
+csv_poc_headers = ["PoC First Name",
+                   "PoC Last Name",
+                   "PoC Email",
+                   "PoC Street Address",
+                   "PoC City",
+                   "PoC State",
+                   "PoC Zip Code",
+                   "PoC Telephone 1",
+                   "PoC Telephone 2",
+                   "PoC Telephone 3"]
            
 csv_to_lead_field_mapping = {"Folio No":"folio_id",
                              "Situs":"property_street_address",
@@ -108,11 +119,14 @@ csv_to_lead_boolean_fields = {"Active":"active",
 def import_leads(file):
     """ Import Leads from the given file """
     reader = csv.DictReader(file, restval="")
-    # GetPoCPeople(reader)
+    suffixes = GetPoCSuffixes(reader)
+    
     for row in reader:
         folio_id = GetFieldData(row, "Folio No")
         owner = Person()
         owner.loadFromOwnerData(row, GetFieldData)
+        
+        pocs = GetPoCPeople(suffixes, row)
         
         auction_date_string = GetFieldData(row, "Date of Auction")
         try:
@@ -142,9 +156,13 @@ def import_leads(file):
             SetBooleanField(lead, row, column, csv_to_lead_boolean_fields[column])
         for column in csv_to_lead_field_mapping:
             SetFieldData(lead, row, column, csv_to_lead_field_mapping[column])
+          
+        lead.save()
+          
+        for poc in pocs:
+            poc.addPoCDataToLead(lead)
             
         if needNewLead:
-            lead = Lead()
             owner.addOwnerDataToLead(lead)
         else:
             owner.addPoCDataToLead(lead)
@@ -156,9 +174,9 @@ def GetFieldData(row, field):
         return row[field].replace('"', '').replace('=', '')
     return ''
     
-def SetFieldData(lead, row, columnName, fieldName):
+def SetFieldData(lead, row, columnName, fieldName, ignoreEmptyString=False):
     data = GetFieldData(row, columnName)
-    if data != "":
+    if ignoreEmptyString or data != "":
         setattr(lead, fieldName, data)
         
 def SetRelatedRecord(lead, row, columnName, fieldName, recordClass, recordFieldName):
@@ -190,6 +208,25 @@ def GetRelatedRecord(row, columnName, recordClass, fieldName):
             
     return record
     
-def GetPoCPeople(reader):
-    """ Get Point of Contact People Wrapper """
-    print reader.fieldnames
+def GetPoCSuffixes(reader):
+    """ Get Point of Contact People suffixes """
+    pocSuffixes = {}
+    for field in reader.fieldnames:
+        if field in csv_headers:
+           continue
+        suffix = field
+        for header in csv_poc_headers:
+            suffix = suffix.replace(header, "").strip()
+        if suffix not in pocSuffixes:
+            pocSuffixes[suffix] = []
+        pocSuffixes[suffix].append(field)
+    return pocSuffixes
+    
+def GetPoCPeople(suffixes, row):
+    """ Get PoC Person Wrappers """
+    pocs = []
+    for suffix in suffixes:
+        poc = Person()
+        poc.loadFromPoCData(row, suffixes[suffix], SetFieldData)
+        pocs.append(poc)
+    return pocs

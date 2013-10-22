@@ -28,7 +28,7 @@ class Person:
     
     def loadFromOwnerData(self, row, GetFieldData):
         """ Load Person Data from a row """
-        self.first_name = ""
+        self.first_name,
         self.last_name = GetFieldData(row, "Owner") + " " + GetFieldData(row, "Owner Second")
         self.street_address = GetFieldData(row, "Street Address")
         self.city = GetFieldData(row, "City")
@@ -49,18 +49,39 @@ class Person:
         
     def addOwnerDataToLead(self, lead):
         """ Add Owner's data to lead as a new Owner """
-        lead.last_name=self.last_name
-        lead.owner_street_address=self.street_address
-        lead.owner_city=self.city
-        lead.owner_state=self.state
-        lead.owner_zip_code=self.zip_code
-        lead.telephone1=self.telephone1
-        lead.telephone2=self.telephone2
-        lead.telephone3=self.telephone3
-        lead.email=self.email
+        if self.shouldAddData():
+            lead.last_name=self.last_name
+            lead.owner_street_address=self.street_address
+            lead.owner_city=self.city
+            lead.owner_state=self.state
+            lead.owner_zip_code=self.zip_code
+            lead.telephone1=self.telephone1
+            lead.telephone2=self.telephone2
+            lead.telephone3=self.telephone3
+            lead.email=self.email
         
     def addPoCDataToLead(self, lead):
         """ Add Person's data to lead as a new Point of Contact """
-        lead.pointofcontact_set.create(first_name=self.first_name, last_name=self.last_name, street_address=self.street_address,
+        if self.shouldAddData():
+            lead.pointofcontact_set.create(first_name=self.first_name, last_name=self.last_name, street_address=self.street_address,
                     city=self.city, state=self.state, zip_code=self.zip_code,
                     telephone1=self.telephone1, telephone2=self.telephone2, telephone3=self.telephone3, email=self.email)
+                    
+    def shouldAddData(self):
+        """ Return if the data should be added to a lead """
+        fields = [self.first_name,
+                  self.last_name,
+                  self.street_address,
+                  self.city,
+                  self.state,
+                  self.zip_code,
+                  self.telephone1,
+                  self.telephone2,
+                  self.telephone3,
+                  self.email]
+                  
+        for field in fields:
+            if field.strip() != "":
+                return True
+        else:        
+            return False

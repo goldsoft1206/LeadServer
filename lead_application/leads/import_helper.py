@@ -118,7 +118,7 @@ csv_to_lead_boolean_fields = {"Active":"active",
     
 def import_leads(file):
     """ Import Leads from the given file """
-    reader = csv.DictReader(file, restval="")
+    reader = csv.DictReader(file.read().splitlines(), restval="")
     suffixes = GetPoCSuffixes(reader)
     
     for row in reader:

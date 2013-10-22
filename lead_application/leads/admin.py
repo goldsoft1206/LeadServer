@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response
 from django import forms
 from django.conf.urls import patterns
 
+from leads.export_helper import export_leads
 from leads.import_helper import import_leads
 
 from dbindexer.api import register_index
@@ -48,7 +49,7 @@ class LeadAdmin(admin.ModelAdmin):
     ]
     
     inlines = [PointOfContactInline, MailingHistoryInline]
-    actions = ['make_active', 'make_inactive']
+    actions = ['make_active', 'make_inactive', 'export']
     # search_fields = ['property_street_address']
     ordering = ('idxf_property_street_address_l_icontains',)
     
@@ -59,6 +60,10 @@ class LeadAdmin(admin.ModelAdmin):
     def make_inactive(self, request, queryset):
         queryset.update(active=False)
     make_inactive.short_description = "Mark selected leads as inactive"
+    
+    def export(self, request, queryset):
+        return export_leads(queryset)
+    export.short_description = "Export selected leads"
     
     def get_urls(self):
         urls = super(LeadAdmin, self).get_urls()

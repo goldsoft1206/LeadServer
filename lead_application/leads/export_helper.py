@@ -33,13 +33,7 @@ def export_leads(leads):
 def GetHeaders(leads):
     """ Return the column headers for the csv file """
     headers = export_headers + GetPoCHeaders(leads)
-    
-    if len(headers) <= 14:
-        for i in range(14-len(headers)): # This should be empty if there are already 14 headers
-            headers.append("")
-        headers.append(DEED_SALE)
-    else:
-        headers[14:14] = [DEED_SALE]
+    AddDeedSaleHeader(headers)
     
     return headers
     
@@ -57,6 +51,16 @@ def GetPoCHeaders(leads):
             headers.append("{0} {1}".format(header, i+1))
     return headers
     
+def AddDeedSaleHeader(headers):
+    """ Adds the Deed Sale Header to the 15th column.
+        Which is required for click2mail integration. """
+    if len(headers) <= 14:
+        for i in range(14-len(headers)): # This should be empty if there are already 14 headers
+            headers.append("")
+        headers.append(DEED_SALE)
+    else:
+        headers[14:14] = [DEED_SALE]
+        
 def GetData(leads, headers):
     """ Return the data for all the leads """
     data = []

@@ -103,7 +103,7 @@ def GetPointOfContactForHeader(lead, header):
     
     for pocHeader in poc_export_headers:
         pocIndexString = pocIndexString.replace(pocHeader, "").strip()
-    pocIndex = int(pocIndexString)
+    pocIndex = int(pocIndexString)-1
     
     if pocIndex < lead.pointofcontact_set.count():
         poc = lead.pointofcontact_set.all()[pocIndex]

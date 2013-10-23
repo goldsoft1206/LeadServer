@@ -1,10 +1,9 @@
 
 FOLIO_ID = "Folio No"
+SITUS = "Situs"
 ASSESSED_VALUE = "Assessed Value"
 USE_CODE = "Use Code"
-
-
-SITUS = "Situs"
+DEED_SALE = "Deed Sale"
 
 # Owner Data
 OWNER_FIRST_NAME = "Owner First Name"
@@ -33,7 +32,7 @@ csv_to_lead_field_mapping = {FOLIO_ID:"folio_id",
                              "Legal Description":"legal_description",
                              "Total Balance":"total_balance",
                              "Annual Bill Balance (2012)":"annual_bill_balance",
-                             "Deed Sale":"tax_auction",
+                             DEED_SALE:"tax_auction",
                              "Primary Zone":"primary_zone",
                              "Land Use":"land_use",
                              "Previos Sale":"previous_sale",

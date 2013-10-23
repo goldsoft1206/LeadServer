@@ -32,7 +32,16 @@ def export_leads(leads):
     
 def GetHeaders(leads):
     """ Return the column headers for the csv file """
-    return export_headers + GetPoCHeaders(leads)
+    headers = export_headers + GetPoCHeaders(leads)
+    
+    if len(headers) <= 14:
+        for i in range(14-len(headers)): # This should be empty if there are already 14 headers
+            headers.append("")
+        headers.append(DEED_SALE)
+    else:
+        headers[14:14] = [DEED_SALE]
+    
+    return headers
     
 def GetPoCHeaders(leads):
     """ Return the necessary PoC Headers """
@@ -61,8 +70,10 @@ def GetDataFromLead(lead, headers):
     
     for header in headers:
         fieldData = ""
-        if header in export_headers:
+        if header in export_headers or header == DEED_SALE:
             fieldData = GetLeadData(lead, header)
+        elif header == "":
+            fieldData = ""
         else:
             fieldData = GetPoCData(lead, header)
         data.append(fieldData)

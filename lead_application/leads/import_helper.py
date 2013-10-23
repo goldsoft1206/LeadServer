@@ -1,4 +1,4 @@
-from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, MailingHistory, PointOfContact
+from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, PointOfContact
 from leads.person import Person
 
 from leads.csv_headers import *
@@ -37,7 +37,19 @@ lead_data_to_always_import = [FOLIO_ID,
                               LENDER_VERIFY_INFO,
                               LOAN_NUMBER,
                               MAILING_COST,
-                              LETTERS_MAILED]
+                              LETTERS_MAILED,
+                              ACTIVE,
+                              OWNER_DECEASED,
+                              AUCTION_PENDING,
+                              CAN_MAIL_MULTIPLE_TIMES,
+                              RETURN_MAIL,
+                              INVESTOR,
+                              STATUS,
+                              LIST_SOURCE,
+                              MAILING_TYPE,
+                              DEAL_TYPE,
+                              PROPERTY_STATUS,
+                              CONSTRUCTION]
     
     
 def import_leads(file):
@@ -63,18 +75,16 @@ def import_leads(file):
         lead.auction_date = auction_date
         lead.annual_bill_balance_year = datetime.now().year
         
-        SetRelatedRecord(lead, row, INVESTOR, "investor", Investor, "name")
-        SetRelatedRecord(lead, row, STATUS, "status", Status, "status")
-        SetRelatedRecord(lead, row, LIST_SOURCE, "list_source", ListSource, "source")
-        SetRelatedRecord(lead, row, MAILING_TYPE, "mailing_type", MailingType, "mailing_type")
-        SetRelatedRecord(lead, row, DEAL_TYPE, "deal_type", DealType, "deal_type")
-        SetRelatedRecord(lead, row, PROPERTY_STATUS, "property_status", PropertyStatus, "property_status")
-        SetRelatedRecord(lead, row, CONSTRUCTION, "construction", Construction, "construction_type")
+        # SetRelatedRecord(lead, row, INVESTOR, "investor")
+        # SetRelatedRecord(lead, row, STATUS, "status")
+        # SetRelatedRecord(lead, row, LIST_SOURCE, "list_source")
+        # SetRelatedRecord(lead, row, MAILING_TYPE, "mailing_type")
+        # SetRelatedRecord(lead, row, DEAL_TYPE, "deal_type")
+        # SetRelatedRecord(lead, row, PROPERTY_STATUS, "property_status")
+        # SetRelatedRecord(lead, row, CONSTRUCTION, "construction")
         
-        for column in lead_boolean_fields:
-            SetBooleanField(lead, row, column, csv_to_lead_field_mapping[column])
         for column in lead_data_to_always_import:
-            SetFieldData(lead, row, column, csv_to_lead_field_mapping[column])
+            SetFieldData(lead, row, column)
           
         lead.save()
           
@@ -103,13 +113,27 @@ def GetFieldData(row, field):
         return row[field].replace('"', '').replace('=', '')
     return ''
     
-def SetFieldData(lead, row, columnName, fieldName, ignoreEmptyString=False):
+def SetFieldData(lead, row, columnName):
+    """ Set Lead field data """
+    fieldName = csv_to_lead_field_mapping[columnName]
+    
+    if columnName in lead_relation_fields:
+        SetRelatedRecord(lead, row, columnName, fieldName)
+    elif columnName in lead_boolean_fields:
+        SetBooleanField(lead, row, columnName, fieldName)
+    else:
+        SetStringField(lead, row, columnName, fieldName)
+        
+def SetStringField(lead, row, columnName, fieldName, ignoreEmptyString=False):
+    """ Set a string field of data """
     data = GetFieldData(row, columnName)
     if ignoreEmptyString or data != "":
         setattr(lead, fieldName, data)
         
-def SetRelatedRecord(lead, row, columnName, fieldName, recordClass, recordFieldName):
+def SetRelatedRecord(lead, row, columnName, fieldName):
     """ Set a related record of the lead class """
+    recordClass = lead_relation_header_to_model[columnName]
+    recordFieldName = lead_relation_header_to_field[columnName]
     record = GetRelatedRecord(row, columnName, recordClass, recordFieldName)
     SetForeignKey(lead, record, fieldName)
     
@@ -156,6 +180,6 @@ def GetPoCPeople(suffixes, row):
     pocs = []
     for suffix in suffixes:
         poc = Person()
-        poc.loadFromPoCData(row, suffixes[suffix], SetFieldData)
+        poc.loadFromPoCData(row, suffixes[suffix], SetStringField)
         pocs.append(poc)
     return pocs

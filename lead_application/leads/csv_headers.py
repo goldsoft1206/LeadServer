@@ -1,3 +1,4 @@
+from leads.models import Construction, DealType, Investor, ListSource, MailingType, PropertyStatus, Status
 
 # Standard Headers
 FOLIO_ID = "Folio No"
@@ -151,7 +152,23 @@ lead_relation_fields = [INVESTOR,
                         DEAL_TYPE,
                         PROPERTY_STATUS,
                         CONSTRUCTION]
+                        
+lead_relation_header_to_model = {INVESTOR:Investor,
+                                 STATUS:Status,
+                                 LIST_SOURCE:ListSource,
+                                 MAILING_TYPE:MailingType,
+                                 DEAL_TYPE:DealType,
+                                 PROPERTY_STATUS:PropertyStatus,
+                                 CONSTRUCTION:Construction}
 
+lead_relation_header_to_field = {INVESTOR:"name",
+                                 STATUS:"status",
+                                 LIST_SOURCE:"source",
+                                 MAILING_TYPE:"mailing_type",
+                                 DEAL_TYPE:"deal_type",
+                                 PROPERTY_STATUS:"property_status",
+                                 CONSTRUCTION:"construction_type"}
+                                 
 csv_poc_headers = {POC_FIRST_NAME:"first_name",
                    POC_LAST_NAME:"last_name",
                    POC_EMAIL:"email",

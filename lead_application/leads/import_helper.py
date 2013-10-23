@@ -58,12 +58,7 @@ def import_leads(file):
         except ValueError:
             auction_date = None
         
-        leads = Lead.objects.filter(folio_id=folio_id)
-        needNewLead = len(leads) == 0
-        if needNewLead:
-            lead = Lead()
-        else:
-            lead = leads[0]
+        lead, isNewLead = GetLead(folio_id)
             
         lead.auction_date = auction_date
         lead.annual_bill_balance_year = datetime.now().year
@@ -86,12 +81,22 @@ def import_leads(file):
         for poc in pocs:
             poc.addPoCDataToLead(lead)
             
-        if needNewLead:
+        if isNewLead:
             owner.addOwnerDataToLead(lead)
         else:
             owner.addPoCDataToLead(lead)
             
         lead.save()
+        
+def GetLead(folio_id):
+    """ Get the Lead for the given Folio ID or create one if one does not exist """
+    leads = Lead.objects.filter(folio_id=folio_id)
+    needNewLead = len(leads) == 0
+    if needNewLead:
+        lead = Lead()
+    else:
+        lead = leads[0]
+    return lead, needNewLead
 
 def GetFieldData(row, field):
     if field in row:

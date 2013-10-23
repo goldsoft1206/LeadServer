@@ -49,7 +49,8 @@ lead_data_to_always_import = [FOLIO_ID,
                               MAILING_TYPE,
                               DEAL_TYPE,
                               PROPERTY_STATUS,
-                              CONSTRUCTION]
+                              CONSTRUCTION,
+                              DATE_OF_AUCTION]
     
     
 def import_leads(file):
@@ -59,34 +60,17 @@ def import_leads(file):
     
     for row in reader:
         folio_id = GetFieldData(row, FOLIO_ID)
+        
         owner = Person()
         owner.loadFromOwnerData(row, GetFieldData)
-        
         pocs = GetPoCPeople(suffixes, row)
         
-        auction_date_string = GetFieldData(row, DATE_OF_AUCTION)
-        try:
-            auction_date = datetime.strptime(auction_date_string, "%B %d, %Y")
-        except ValueError:
-            auction_date = None
-        
         lead, isNewLead = GetLead(folio_id)
-            
-        lead.auction_date = auction_date
         lead.annual_bill_balance_year = datetime.now().year
-        
-        # SetRelatedRecord(lead, row, INVESTOR, "investor")
-        # SetRelatedRecord(lead, row, STATUS, "status")
-        # SetRelatedRecord(lead, row, LIST_SOURCE, "list_source")
-        # SetRelatedRecord(lead, row, MAILING_TYPE, "mailing_type")
-        # SetRelatedRecord(lead, row, DEAL_TYPE, "deal_type")
-        # SetRelatedRecord(lead, row, PROPERTY_STATUS, "property_status")
-        # SetRelatedRecord(lead, row, CONSTRUCTION, "construction")
         
         for column in lead_data_to_always_import:
             SetFieldData(lead, row, column)
-          
-        lead.save()
+        lead.save() # Save so PoC Creation has a record to attach to
           
         for poc in pocs:
             poc.addPoCDataToLead(lead)
@@ -121,6 +105,8 @@ def SetFieldData(lead, row, columnName):
         SetRelatedRecord(lead, row, columnName, fieldName)
     elif columnName in lead_boolean_fields:
         SetBooleanField(lead, row, columnName, fieldName)
+    elif columnName in lead_date_fields:
+        SetDateField(lead, row, columnName, fieldName)
     else:
         SetStringField(lead, row, columnName, fieldName)
         
@@ -146,6 +132,15 @@ def SetBooleanField(lead, row, columnName, fieldName):
     """ Set a boolean field of lead data """
     boolean_string = GetFieldData(row, columnName)
     setattr(lead, fieldName, boolean_string.strip().lower() == "yes")
+    
+def SetDateField(lead, row, columnName, fieldName):
+    """ Set a Date Field """
+    date_string = GetFieldData(row, columnName)
+    try:
+        date = datetime.strptime(date_string, "%B %d, %Y")
+        setattr(lead, fieldName, date)
+    except ValueError:
+        pass # Do nothing since the date field was malformed
     
 def GetRelatedRecord(row, columnName, recordClass, fieldName):
     """ Return the record related to the given row or create it if it does not exist """

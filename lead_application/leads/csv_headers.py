@@ -145,6 +145,8 @@ lead_boolean_fields = [ACTIVE,
                        CAN_MAIL_MULTIPLE_TIMES,
                        RETURN_MAIL]
                        
+lead_date_fields = [DATE_OF_AUCTION]
+                       
 lead_relation_fields = [INVESTOR,
                         STATUS,
                         LIST_SOURCE,

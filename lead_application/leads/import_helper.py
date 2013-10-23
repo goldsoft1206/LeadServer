@@ -64,7 +64,7 @@ def import_leads(file):
             lead = Lead()
         else:
             lead = leads[0]
-        print auction_date    
+            
         lead.auction_date = auction_date
         lead.annual_bill_balance_year = datetime.now().year
         

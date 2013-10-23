@@ -5,97 +5,39 @@ from leads.csv_headers import *
 
 import csv
 from datetime import datetime
-
-lead_data_headers = [
-               "Folio No",
-               "Date of Auction",
-               "Owner",
-               "Owner Second",
-               "Street Address",
-               "City",
-               "State",
-               "Zip Code",
-               "Situs",
-               "Assessed Value",
-               "Use Code",
-               "Legal Description",
-               "Total Balance",
-               "Annual Bill Balance (2012)",
-               "Deed Sale",
-               'Primary Zone',
-               'Land Use',
-               'Previous Sale',
-               'Price',
-               'OR Book Page',
-               'Investor',
-               'Status',
-               'List Source',
-               'Mailing Type',
-               'Deal Type',
-               'Active',
-               'Deceased',
-               'Telephone 1',
-               'Telephone 2',
-               'Telephone 3',
-               'Email',
-               'Property Street Address',
-               'Property City',
-               'Property State',
-               'Property Zip Code',
-               'Property Status',
-               'Known Encumbrances',
-               'Bedroom Number',
-               'Bathroom Number',
-               'Inside SQ FT',
-               'Lot Size',
-               'Construction',
-               'Property Year Built',
-               'Auction Pending',
-               'Balance Owed',
-               'Short Sale Lender Name',
-               'Short Sale Telephone',
-               'Short Sale Fax',
-               'Short Sale PoC',
-               'Lender Verify Info',
-               'Loan Number',
-               'Mailing Cost',
-               'Letters Mailed',
-               'Can Mail Multiple Times',
-               'Return Mail'
-               ]
                
 lead_data_to_always_import = [FOLIO_ID,
                               SITUS,
                               ASSESSED_VALUE,
                               USE_CODE,
-                              "Legal Description",
-                              "Total Balance",
-                              "Annual Bill Balance (2012)",
-                              "Deed Sale",
-                              "Primary Zone",
-                              "Land Use",
-                              "Previos Sale",
-                              "Price",
-                              "OR Book Page",
-                              "Property Street Address",
-                              "Property City",
-                              "Property State",
-                              "Property Zip Code",
-                              'Known Encumbrances',
-                              'Bedroom Number',
-                              'Bathroom Number',
-                              'Inside SQ FT',
-                              'Lot Size',
-                              'Property Year Built',
-                              'Balance Owed',
-                              'Short Sale Lender Name',
-                              'Short Sale Telephone',
-                              'Short Sale Fax',
-                              'Short Sale PoC',
-                              'Lender Verify Info',
-                              'Loan Number',
-                              'Mailing Cost',
-                              'Letters Mailed']
+                              LEGAL_DESCRIPTION,
+                              TOTAL_BALANCE,
+                              ANNUAL_BILL_BALANCE,
+                              DEED_SALE,
+                              PRIMARY_ZONE,
+                              LAND_USE,
+                              PREVIOUS_SALE,
+                              PRICE,
+                              OR_BOOK_PAGE,
+                              PROPERTY_STREET_ADDRESS,
+                              PROPERTY_CITY,
+                              PROPERTY_STATE,
+                              PROPERTY_ZIP_CODE,
+                              KNOWN_ENCUMBRANCES,
+                              BEDROOM_NUMBER,
+                              BATHROOM_NUMBER,
+                              INSIDE_SQ_FT,
+                              LOT_SIZE,
+                              PROPERTY_YEAR_BUILT,
+                              BALANCE_OWED,
+                              SHORT_SALE_LENDER_NAME,
+                              SHORT_SALE_TELEPHONE,
+                              SHORT_SALE_FAX,
+                              SHORT_SALE_POC,
+                              LENDER_VERIFY_INFO,
+                              LOAN_NUMBER,
+                              MAILING_COST,
+                              LETTERS_MAILED]
     
     
 def import_leads(file):
@@ -104,13 +46,13 @@ def import_leads(file):
     suffixes = GetPoCSuffixes(reader)
     
     for row in reader:
-        folio_id = GetFieldData(row, "Folio No")
+        folio_id = GetFieldData(row, FOLIO_ID)
         owner = Person()
         owner.loadFromOwnerData(row, GetFieldData)
         
         pocs = GetPoCPeople(suffixes, row)
         
-        auction_date_string = GetFieldData(row, "Date of Auction")
+        auction_date_string = GetFieldData(row, DATE_OF_AUCTION)
         try:
             auction_date = datetime.strptime(auction_date_string, "%B %d, %Y")
         except ValueError:
@@ -122,20 +64,20 @@ def import_leads(file):
             lead = Lead()
         else:
             lead = leads[0]
-            
+        print auction_date    
         lead.auction_date = auction_date
         lead.annual_bill_balance_year = datetime.now().year
         
-        SetRelatedRecord(lead, row, "Investor", "investor", Investor, "name")
-        SetRelatedRecord(lead, row, "Status", "status", Status, "status")
-        SetRelatedRecord(lead, row, "List Source", "list_source", ListSource, "source")
-        SetRelatedRecord(lead, row, "Mailing Type", "mailing_type", MailingType, "mailing_type")
-        SetRelatedRecord(lead, row, "Deal Type", "deal_type", DealType, "deal_type")
-        SetRelatedRecord(lead, row, "Property Status", "property_status", PropertyStatus, "property_status")
-        SetRelatedRecord(lead, row, "Construction", "construction", Construction, "construction_type")
+        SetRelatedRecord(lead, row, INVESTOR, "investor", Investor, "name")
+        SetRelatedRecord(lead, row, STATUS, "status", Status, "status")
+        SetRelatedRecord(lead, row, LIST_SOURCE, "list_source", ListSource, "source")
+        SetRelatedRecord(lead, row, MAILING_TYPE, "mailing_type", MailingType, "mailing_type")
+        SetRelatedRecord(lead, row, DEAL_TYPE, "deal_type", DealType, "deal_type")
+        SetRelatedRecord(lead, row, PROPERTY_STATUS, "property_status", PropertyStatus, "property_status")
+        SetRelatedRecord(lead, row, CONSTRUCTION, "construction", Construction, "construction_type")
         
-        for column in csv_to_lead_boolean_fields:
-            SetBooleanField(lead, row, column, csv_to_lead_boolean_fields[column])
+        for column in lead_boolean_fields:
+            SetBooleanField(lead, row, column, csv_to_lead_field_mapping[column])
         for column in lead_data_to_always_import:
             SetFieldData(lead, row, column, csv_to_lead_field_mapping[column])
           
@@ -194,7 +136,7 @@ def GetPoCSuffixes(reader):
     """ Get Point of Contact People suffixes """
     pocSuffixes = {}
     for field in reader.fieldnames:
-        if field in lead_data_headers:
+        if field in csv_to_lead_field_mapping:
            continue
         suffix = field
         for header in csv_poc_headers:

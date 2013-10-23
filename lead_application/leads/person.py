@@ -19,15 +19,15 @@ class Person:
     def loadFromOwnerData(self, row, GetFieldData):
         """ Load Person Data from a row """
         self.first_name = ""
-        self.last_name = GetFieldData(row, "Owner") + " " + GetFieldData(row, "Owner Second")
-        self.street_address = GetFieldData(row, "Street Address")
-        self.city = GetFieldData(row, "City")
-        self.state = GetFieldData(row, "State")
-        self.zip_code = GetFieldData(row, "Zip Code")
-        self.telephone1 = GetFieldData(row, "Telephone 1")
-        self.telephone2 = GetFieldData(row, "Telephone 2")
-        self.telephone3 = GetFieldData(row, "Telephone 3")
-        self.email = GetFieldData(row, "Email")
+        self.last_name = GetFieldData(row, OWNER_NAME) + " " + GetFieldData(row, OWNER_SECOND)
+        self.street_address = GetFieldData(row, OWNER_STREET_ADDRESS)
+        self.city = GetFieldData(row, OWNER_CITY)
+        self.state = GetFieldData(row, OWNER_STATE)
+        self.zip_code = GetFieldData(row, OWNER_ZIP_CODE)
+        self.telephone1 = GetFieldData(row, OWNER_TELEPHONE_1)
+        self.telephone2 = GetFieldData(row, OWNER_TELEPHONE_2)
+        self.telephone3 = GetFieldData(row, OWNER_TELEPHONE_3)
+        self.email = GetFieldData(row, OWNER_EMAIL)
         
     def loadFromPoCData(self, row, suffixHeaders, SetFieldData):
         """ Load PoC Data from a row with a given suffix """

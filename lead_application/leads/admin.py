@@ -63,7 +63,7 @@ class LeadAdmin(admin.ModelAdmin):
     
     def export(self, request, queryset):
         return export_leads(queryset)
-    export.short_description = "Export selected leads"
+    export.short_description = "Export selected leads as csv for click2mail integration"
     
     def get_urls(self):
         urls = super(LeadAdmin, self).get_urls()

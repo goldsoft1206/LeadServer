@@ -91,8 +91,8 @@ class Lead(models.Model):
     price = models.CharField(max_length=200, blank=True, null=True)
     or_book_page = models.CharField("OR Book Page", max_length=200, blank=True, null=True)
     # Property Characteristics
-    property_bedroom_number = models.IntegerField("Number of bedrooms", default=0, blank=True, null=True)
-    property_bathroom_number = models.IntegerField("Number of bathrooms", default=0, blank=True, null=True)
+    property_bedroom_number = models.DecimalField("Number of bedrooms", max_digits=19, decimal_places=1, default=0, blank=True, null=True)
+    property_bathroom_number = models.DecimalField("Number of bathrooms", max_digits=19, decimal_places=1, default=0, blank=True, null=True)
     property_inside_sq_ft = models.IntegerField("Inside SQ FT", default=0, blank=True, null=True)
     property_lot_size = models.IntegerField("Lot size", default=0, blank=True, null=True)
     construction = models.ForeignKey(Construction, blank=True, null=True)

@@ -5,7 +5,8 @@ from leads.csv_headers import *
 
 import csv
 
-export_headers = [SITUS,
+export_headers = [FOLIO_ID,
+                  SITUS,
                   OWNER_FIRST_NAME,
                   OWNER_LAST_NAME,
                   OWNER_STREET_ADDRESS,

@@ -1,6 +1,8 @@
-import datetime
-from django.utils import timezone
+from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
+
+import datetime
 
 class Construction(models.Model):
     construction_type = models.CharField(max_length=200)
@@ -33,12 +35,16 @@ class MailingType(models.Model):
         return self.mailing_type
         
 class PropertyStatus(models.Model):
+    class Meta:
+        verbose_name_plural = "property statuses"
     property_status = models.CharField(max_length=200)
     
     def __unicode__(self):
         return self.property_status
         
 class Status(models.Model):
+    class Meta:
+        verbose_name_plural = "statuses"
     status = models.CharField(max_length=200)
     
     def __unicode__(self):
@@ -170,3 +176,9 @@ class PointOfContact(models.Model):
             name += self.last_name
         
         return name
+
+class LeadNote(models.Model):
+    created_at = models.DateTimeField(auto_now_add = True)
+    lead = models.ForeignKey(Lead)
+    note = models.TextField()
+    user = models.ForeignKey(User, null=True, blank=True)

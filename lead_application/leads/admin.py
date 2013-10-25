@@ -1,4 +1,4 @@
-from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, MailingHistory, PointOfContact
+from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, MailingHistory, PointOfContact, LeadNote
 from django.contrib import admin
 from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_protect
@@ -20,6 +20,21 @@ class UploadFileForm(forms.Form):
 class MailingHistoryInline(admin.StackedInline):
     model = MailingHistory
     extra = 1
+    
+class LeadNoteInline(admin.StackedInline):
+    model = LeadNote
+    extra = 1
+    
+    readonly_fields = ('created_at', 'user',)
+    
+    fieldsets = [
+        (None, { 'fields': [('note', 'user', 'created_at')] } ),
+    ]
+
+    def save_model(self, request, obj, form, change):
+        if getattr(obj, 'user', None) is None:
+            obj.user = request.user
+        obj.save()
 
 class PointOfContactInline(admin.StackedInline):
     model = PointOfContact
@@ -48,7 +63,7 @@ class LeadAdmin(admin.ModelAdmin):
         ('Mail/Campaign information', {'fields': ['cost', 'letters_mailed', 'can_mail_multiple_times', 'return_mail'], 'classes': ['collapse']}),
     ]
     
-    inlines = [PointOfContactInline, MailingHistoryInline]
+    inlines = [PointOfContactInline, MailingHistoryInline, LeadNoteInline]
     actions = ['make_active', 'make_inactive', 'export']
     # search_fields = ['property_street_address']
     ordering = ('idxf_property_street_address_l_icontains',)
@@ -84,6 +99,14 @@ class LeadAdmin(admin.ModelAdmin):
         c = {'form': form}
         c.update(csrf(request))
         return HttpResponseRedirect('/admin/leads/lead')
+        
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            if hasattr(instance, 'user'):
+                instance.user = request.user
+                instance.save()
+        formset.save_m2m()
         
     
 

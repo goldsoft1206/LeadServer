@@ -24,11 +24,12 @@ class MailingHistoryInline(admin.StackedInline):
 class LeadNoteInline(admin.StackedInline):
     model = LeadNote
     extra = 1
+    template = "admin/leads/lead/notes_stacked.html"
     
     readonly_fields = ('created_at', 'user',)
     
     fieldsets = [
-        (None, { 'fields': [('note', 'user', 'created_at')] } ),
+        (None, { 'fields': ['note'] } ),
     ]
 
     def save_model(self, request, obj, form, change):

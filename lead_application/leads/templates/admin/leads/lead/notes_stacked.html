@@ -24,6 +24,43 @@
       <span class="inline_label"> at {{ inline_admin_form.original.created_at }}</span>
       {% if inline_admin_form.show_url %}<a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/">{% trans "View on site" %}</a>{% endif %}
       {% if inline_admin_formset.formset.can_delete and inline_admin_form.original %}<span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>{% endif %}
+      
+      {% if inline_admin_form.form.non_field_errors %}{{ inline_admin_form.form.non_field_errors }}{% endif %}
+
+      {% for fieldset in inline_admin_form %}
+        <fieldset>
+            {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+            {% if fieldset.description %}
+                <div class="description">{{ fieldset.description|safe }}</div>
+            {% endif %}
+            {% for line in fieldset %}
+                <div >
+                    {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
+                    {% for field in line %}
+                        <div>
+                            {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                            {% if field.is_checkbox %}
+                                {{ field.field.as_hidden }}{{ field.label_tag }}
+                            {% else %}
+                                <!-- {{ field.label_tag }} -->
+                                {% if field.is_readonly %}
+                                    <p>{{ field.contents }}</p>
+                                {% else %}
+                                    {{ field.field.as_hidden }}
+                                {% endif %}
+                            {% endif %}
+                            {% if field.field.help_text %}
+                                <p class="help">{{ field.field.help_text|safe }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </fieldset>
+      {% endfor %}
+      
+      {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+      {{ inline_admin_form.fk_field.field }}
     </h3>
   {% endif %}
 </div>{% endfor %}

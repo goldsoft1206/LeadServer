@@ -6,13 +6,14 @@ from leads.csv_headers import *
 import csv
 
 export_headers = [FOLIO_ID,
-                  SITUS,
-                  OWNER_FIRST_NAME,
-                  OWNER_LAST_NAME,
-                  OWNER_STREET_ADDRESS,
-                  OWNER_CITY,
-                  OWNER_STATE,
-                  OWNER_ZIP_CODE]
+                  SITUS]
+                  
+owner_headers =[OWNER_FIRST_NAME,
+                OWNER_LAST_NAME,
+                OWNER_STREET_ADDRESS,
+                OWNER_CITY,
+                OWNER_STATE,
+                OWNER_ZIP_CODE]
                   
 poc_export_headers = [POC_FIRST_NAME,
                       POC_LAST_NAME,
@@ -20,6 +21,13 @@ poc_export_headers = [POC_FIRST_NAME,
                       POC_CITY,
                       POC_STATE,
                       POC_ZIP_CODE]
+                      
+owner_to_poc_headers = {OWNER_FIRST_NAME:POC_FIRST_NAME,
+                        OWNER_LAST_NAME:POC_LAST_NAME,
+                        OWNER_STREET_ADDRESS:POC_STREET_ADDRESS,
+                        OWNER_CITY:POC_CITY,
+                        OWNER_STATE:POC_STATE,
+                        OWNER_ZIP_CODE:POC_ZIP_CODE}
 
 def export_leads(leads):
     """ Export the given leads """
@@ -33,7 +41,7 @@ def export_leads(leads):
     
 def GetHeaders(leads):
     """ Return the column headers for the csv file """
-    headers = export_headers + GetPoCHeaders(leads)
+    headers = export_headers + owner_headers #+ GetPoCHeaders(leads)
     AddDeedSaleHeader(headers)
     
     return headers
@@ -67,10 +75,25 @@ def GetData(leads, headers):
     data = []
     for lead in leads:
         data.append(GetDataFromLead(lead, headers))
+        for poc in lead.pointofcontact_set.all():
+            data.append(GetDataFromPoC(lead, poc, headers))
     return data
     
 def GetDataFromLead(lead, headers):
     """ Get the text data from a single lead """
+    data = []
+    
+    for header in headers:
+        fieldData = ""
+        if header == "":
+            fieldData = ""
+        else:
+            fieldData = GetLeadData(lead, header)
+        data.append(fieldData)
+    return data
+    
+def GetDataFromPoC(lead, poc, headers):
+    """ Get the text data from a single Point of Contact """
     data = []
     
     for header in headers:
@@ -80,7 +103,7 @@ def GetDataFromLead(lead, headers):
         elif header == "":
             fieldData = ""
         else:
-            fieldData = GetPoCData(lead, header)
+            fieldData = GetPoCData(poc, header)
         data.append(fieldData)
     return data
     
@@ -88,11 +111,12 @@ def GetLeadData(lead, header):
     """ Get Data from a particular lead field """
     return getattr(lead, csv_to_lead_field_mapping[header])
     
-def GetPoCData(lead, header):
+def GetPoCData(poc, header):
     """ Get Data from a particular lead field """
-    poc, realHeader = GetPointOfContactForHeader(lead, header)
+    # poc, realHeader = GetPointOfContactForHeader(lead, header)
     
     if poc is not None:
+        realHeader = owner_to_poc_headers[header]
         return getattr(poc, csv_poc_headers[realHeader])
     else:
         return ""

@@ -12,7 +12,7 @@ from leads.import_helper import import_leads
 
 from dbindexer.api import register_index
 
-register_index(Lead, {'property_street_address': 'icontains'})
+# register_index(Lead, {'property_street_address': 'icontains'})
 
 class UploadFileForm(forms.Form):
     file  = forms.FileField()
@@ -67,7 +67,7 @@ class LeadAdmin(admin.ModelAdmin):
     inlines = [PointOfContactInline, MailingHistoryInline, LeadNoteInline]
     actions = ['make_active', 'make_inactive', 'export']
     # search_fields = ['property_street_address']
-    ordering = ('idxf_property_street_address_l_icontains',)
+    # ordering = ('idxf_property_street_address_l_icontains',)
     
     def make_active(self, request, queryset):
         queryset.update(active=True)

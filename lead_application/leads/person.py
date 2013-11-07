@@ -29,6 +29,12 @@ class Person:
         self.telephone3 = GetFieldData(row, OWNER_TELEPHONE_3)
         self.email = GetFieldData(row, OWNER_EMAIL)
         
+        if self.first_name.strip() == "":
+            self.first_name = GetFieldData(row, OWNER_FIRST_NAME)
+            
+        if self.last_name.strip() == "":
+            self.last_name = GetFieldData(row, OWNER_LAST_NAME)
+        
     def loadFromPoCData(self, row, suffixHeaders, SetFieldData):
         """ Load PoC Data from a row with a given suffix """
         for fullHeader in suffixHeaders:
@@ -40,6 +46,7 @@ class Person:
     def addOwnerDataToLead(self, lead):
         """ Add Owner's data to lead as a new Owner """
         if self.shouldAddData():
+            lead.first_name=self.first_name
             lead.last_name=self.last_name
             lead.owner_street_address=self.street_address
             lead.owner_city=self.city

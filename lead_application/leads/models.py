@@ -142,19 +142,23 @@ class Lead(models.Model):
         
     def most_recent_mailing_date(self):
         """ Return the most recent mailing date """
-        mailingHistories = self.mailing_histories_set.all()
+        mailingHistories = self.mailinghistory_set.all()
         if len(mailingHistories) != 0:
-            today = datetime.today()
+            today = datetime.date.today()
             
             mostRecentHistory = None
             diff = -1
-            for mailingHistory.mailing_date in mailingHistories:
-                if mailingHistory.mailing_date < today and (mailingHistory.mailing_date - today < diff or diff == -1):
+            for mailingHistory in mailingHistories:
+                if mailingHistory.mailing_date < today and (diff == -1 or mailingHistory.mailing_date - today < diff):
                     mostRecentHistory = mailingHistory
                     diff = mostRecentHistory.mailing_date - today
-            return mostRecentHistory.mailing_date
+                    
+            if mostRecentHistory is None:
+                return "No Mailing History"
+            else:
+                return mostRecentHistory.mailing_date
         else:
-            return ""
+            return "No Mailing History"
     
     def __unicode__(self):
         return self.owner_name()

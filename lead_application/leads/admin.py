@@ -102,18 +102,16 @@ class LeadAdmin(admin.ModelAdmin):
         return HttpResponseRedirect('/admin/leads/lead')
         
     def save_formset(self, request, form, formset, change):
-        has_user = False
-        instances = formset.save(commit=False)
-        for instance in instances:
-            if hasattr(instance, 'user'):
-                has_user = True
-                instance.user = request.user
-                instance.save()
-        if not has_user:
-            admin.ModelAdmin.save_formset(self, request, form, formset, change)
-        else:
+        if not change:
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if hasattr(instance, 'user') and not change:
+                    has_user = True
+                    instance.user = request.user
+                    instance.save()
             formset.save_m2m()
-        
+        else:
+            admin.ModelAdmin.save_formset(self, request, form, formset, change)
     
 
 admin.site.register(Construction)

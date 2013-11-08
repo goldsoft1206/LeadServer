@@ -139,6 +139,22 @@ class Lead(models.Model):
             name += self.last_name
         
         return name
+        
+    def most_recent_mailing_date(self):
+        """ Return the most recent mailing date """
+        mailingHistories = self.mailing_histories_set.all()
+        if len(mailingHistories) != 0:
+            today = datetime.today()
+            
+            mostRecentHistory = None
+            diff = -1
+            for mailingHistory.mailing_date in mailingHistories:
+                if mailingHistory.mailing_date < today and (mailingHistory.mailing_date - today < diff or diff == -1):
+                    mostRecentHistory = mailingHistory
+                    diff = mostRecentHistory.mailing_date - today
+            return mostRecentHistory.mailing_date
+        else:
+            return ""
     
     def __unicode__(self):
         return self.owner_name()
@@ -152,7 +168,7 @@ class MailingHistory(models.Model):
     mailing_date = models.DateField(blank=True, null=True)
     
     def __unicode__(self):
-        return self.first_name + " " + self.last_name
+        return self.mailing_date.strftime("%m/%d/%y")
 
 class PointOfContact(models.Model):
     lead = models.ForeignKey(Lead)

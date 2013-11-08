@@ -52,7 +52,7 @@ class LeadAdmin(admin.ModelAdmin):
         css = {'all': ('admin/css/import.css',),}
         
     readonly_fields = ('created_at', 'updated_at',)
-    list_display = ('active_string', 'status', 'property_street_address', 'owner_name', 'telephone1', 'telephone2', 'auction_date')
+    list_display = ('active_string', 'status', 'property_street_address', 'owner_name', 'telephone1', 'telephone2', 'auction_date', 'most_recent_mailing_date')
     list_filter = ('active',)
     fieldsets = [
         (None,                  {'fields': [('created_at', 'updated_at'), 'investor', 'status', 'list_source', 'mailing_type', 'deal_type', 'active']}),    
@@ -102,12 +102,17 @@ class LeadAdmin(admin.ModelAdmin):
         return HttpResponseRedirect('/admin/leads/lead')
         
     def save_formset(self, request, form, formset, change):
+        has_user = False
         instances = formset.save(commit=False)
         for instance in instances:
             if hasattr(instance, 'user'):
+                has_user = True
                 instance.user = request.user
                 instance.save()
-        formset.save_m2m()
+        if not has_user:
+            admin.ModelAdmin.save_formset(self, request, form, formset, change)
+        else:
+            formset.save_m2m()
         
     
 

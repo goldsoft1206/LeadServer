@@ -149,9 +149,9 @@ class Lead(models.Model):
             mostRecentHistory = None
             diff = -1
             for mailingHistory in mailingHistories:
-                if mailingHistory.mailing_date < today and (diff == -1 or mailingHistory.mailing_date - today < diff):
+                if mailingHistory.mailing_date < today and (diff == -1 or (today - mailingHistory.mailing_date) < diff):
                     mostRecentHistory = mailingHistory
-                    diff = mostRecentHistory.mailing_date - today
+                    diff = today - mostRecentHistory.mailing_date
                     
             if mostRecentHistory is None:
                 return "No Mailing History"
@@ -159,6 +159,26 @@ class Lead(models.Model):
                 return mostRecentHistory.mailing_date
         else:
             return "No Mailing History"
+            
+    def next_mailing_date(self):
+        """ Return the next mailing date """
+        mailingHistories = self.mailinghistory_set.all()
+        if len(mailingHistories) != 0:
+            today = datetime.date.today()
+            
+            nextHistory = None
+            diff = -1
+            for mailingHistory in mailingHistories:
+                if mailingHistory.mailing_date > today and (diff == -1 or (mailingHistory.mailing_date - today) < diff):
+                    nextHistory = mailingHistory
+                    diff = mailingHistory.mailing_date - today
+                    
+            if nextHistory is None:
+                return "No Future Mailings"
+            else:
+                return nextHistory.mailing_date
+        else:
+            return "No Future Mailings"
     
     def __unicode__(self):
         return self.owner_name()

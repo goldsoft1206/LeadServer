@@ -1,21 +1,31 @@
 from leads.models import Construction, DealType, Investor, Lead, ListSource, MailingType, PropertyStatus, Status, MailingHistory, PointOfContact, LeadNote
 from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
 from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django import forms
 from django.conf.urls import patterns
+from django.contrib.admin.widgets import AdminDateWidget 
 
 from leads.export_helper import export_leads
 from leads.import_helper import import_leads
 
 from dbindexer.api import register_index
 
+from datetime import datetime
 # register_index(Lead, {'property_street_address': 'icontains'})
 
 class UploadFileForm(forms.Form):
     file  = forms.FileField()
+    
+class MailingDateForm(forms.Form):
+    class Meta:
+        widgets = {'mailing_date': forms.DateInput(attrs={'type': 'date'})}
+    mailing_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    # mailing_date = forms.DateField(widget=AdminDateWidget)
     
 class MailingHistoryInline(admin.StackedInline):
     model = MailingHistory
@@ -65,7 +75,7 @@ class LeadAdmin(admin.ModelAdmin):
     ]
     
     inlines = [PointOfContactInline, MailingHistoryInline, LeadNoteInline]
-    actions = ['make_active', 'make_inactive', 'export']
+    actions = ['make_active', 'make_inactive', 'export', 'add_mailing_date']
     # search_fields = ['property_street_address']
     # ordering = ('idxf_property_street_address_l_icontains',)
     
@@ -81,10 +91,17 @@ class LeadAdmin(admin.ModelAdmin):
         return export_leads(queryset)
     export.short_description = "Export selected leads as csv for click2mail integration"
     
+    def add_mailing_date(self, request, queryset):
+        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+        ct = ContentType.objects.get_for_model(queryset.model)
+        return HttpResponseRedirect("/admin/leads/lead/add-mailings?ct=%s&ids=%s" % (ct.pk, ",".join(selected)))
+    add_mailing_date.short_description = "Add mailing date to selected leads"
+    
     def get_urls(self):
         urls = super(LeadAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^import/$', self.admin_site.admin_view(self.import_leads_view))
+            (r'^import/$', self.admin_site.admin_view(self.import_leads_view)),
+            (r'^add-mailings$', self.admin_site.admin_view(self.add_mailing_dates)),
         )
         return my_urls + urls
         
@@ -100,6 +117,21 @@ class LeadAdmin(admin.ModelAdmin):
         c = {'form': form}
         c.update(csrf(request))
         return HttpResponseRedirect('/admin/leads/lead')
+    
+    def add_mailing_dates(self, request):
+        """ Render the Mailing date page or add the submitted date """
+        if request.method == "GET":
+            form = MailingDateForm()
+            object_ids = [long(value) for value in request.GET["ids"].split(",")]
+            queryset = Lead.objects.filter(id__in=object_ids)
+            return render(request, 'add_mailing_date.html', {'app_label':'leads', 'admin_urlname':'leads', 'queryset':queryset, 'object_ids':request.GET["ids"], 'form':form})
+        else:
+            object_ids = [long(value) for value in request.POST["ids"].split(",")]
+            queryset = Lead.objects.filter(id__in=object_ids)
+            date = datetime.strptime(request.POST['mailing_date'], "%Y-%m-%d")
+            for lead in queryset:
+                lead.mailinghistory_set.create(mailing_date=date)
+            return HttpResponseRedirect('/admin/leads/lead')
         
     def save_formset(self, request, form, formset, change):
         if not change:

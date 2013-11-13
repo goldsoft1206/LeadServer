@@ -42,15 +42,19 @@
     {% endif %}
 {% else %}
     <p>{% blocktrans %}Are you sure you want to update the selected Leads? All of the following objects and their related items will be updated:{% endblocktrans %}</p>
-    {% for obj in queryset %}
-        <ul>Lead: {{ obj }}</ul>
-    {% endfor %}
-    <form action="/admin/leads/lead/add-mailings" method="post">{% csrf_token %}
-    <div>
-        <input type="hidden" name="ids" value="{{ object_ids }}" />
-        <p><label for="id_mailing_date">Mailing date: </label><input type="date" name="mailing_date" id="id_mailing_date"></input></p>
-        <input type="submit" value="{% trans "Yes, I'm sure" %}" />
+    <div style="float:left;width:30%;">
+        {% for obj in queryset %}
+            <ul>Lead: {{ obj }}</ul>
+        {% endfor %}
     </div>
-    </form>
+    <div style="float:right;text-align:center;width:70%;">
+        <form action="/admin/leads/lead/add-mailings" method="post">{% csrf_token %}
+        <div>
+            <input type="hidden" name="ids" value="{{ object_ids }}" />
+            <p><label for="id_mailing_date">Mailing date: </label><input type="date" name="mailing_date" id="id_mailing_date"></input></p>
+            <input type="submit" value="{% trans "Yes, I'm sure" %}" />
+        </div>
+        </form>
+    </div>
 {% endif %}
 {% endblock %}

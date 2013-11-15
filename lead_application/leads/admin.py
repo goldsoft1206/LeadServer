@@ -22,10 +22,7 @@ class UploadFileForm(forms.Form):
     file  = forms.FileField()
     
 class MailingDateForm(forms.Form):
-    class Meta:
-        widgets = {'mailing_date': forms.DateInput(attrs={'type': 'date'})}
-    mailing_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    # mailing_date = forms.DateField(widget=AdminDateWidget)
+    mailing_date = forms.DateField(widget=AdminDateWidget)
     
 class MailingHistoryInline(admin.StackedInline):
     model = MailingHistory

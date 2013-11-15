@@ -195,6 +195,9 @@ class MailingHistory(models.Model):
         return self.mailing_date.strftime("%m/%d/%y")
 
 class PointOfContact(models.Model):
+    class Meta:
+        unique_together = ("lead", "street_address")
+        
     lead = models.ForeignKey(Lead)
     first_name = models.CharField(max_length=200, blank=True, null=True)
     last_name = models.CharField(max_length=200)

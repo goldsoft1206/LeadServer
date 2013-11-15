@@ -60,7 +60,9 @@ class Person:
     def addPoCDataToLead(self, lead):
         """ Add Person's data to lead as a new Point of Contact """
         if self.shouldAddData():
-            lead.pointofcontact_set.create(first_name=self.first_name, last_name=self.last_name, street_address=self.street_address,
+            pocStreetAddresses = [poc.street_address for poc in lead.pointofcontact_set.all()]
+            if self.street_address not in pocStreetAddresses:
+                lead.pointofcontact_set.create(first_name=self.first_name, last_name=self.last_name, street_address=self.street_address,
                     city=self.city, state=self.state, zip_code=self.zip_code,
                     telephone1=self.telephone1, telephone2=self.telephone2, telephone3=self.telephone3, email=self.email)
                     
